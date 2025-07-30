@@ -1,0 +1,256 @@
+[
+  {
+    "file_path": "test_samples/sample1.js",
+    "file_size": 3030,
+    "parsing_results": {
+      "file_path": "test_samples/sample1.js",
+      "endpoints": [
+        "/api/search?q=",
+        "/scripts/",
+        "/api/payments/process",
+        "/delete",
+        "/api/users/",
+        "/api/upload"
+      ],
+      "secrets": [
+        {
+          "value": "AKIAIOSFODNN7EXAMPLE",
+          "type": "AWS Access Key",
+          "pattern": "[\"\\'][A-Za-z0-9]{20,}[\"\\']",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        },
+        {
+          "value": "STRIPE_PUBLIC_KEY",
+          "type": "Unknown Secret",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 56,
+          "context": "    method: 'POST',\n    headers: {\n      'X-API-Key': STRIPE_PUBLIC_KEY\n    }\n  });"
+        },
+        {
+          "value": "sk_test_1a2b3c4d5e6f7g8h9i0j",
+          "type": "Stripe Secret Key",
+          "pattern": "secret[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 6,
+          "context": "// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n"
+        },
+        {
+          "value": "AKIAIOSFODNN7EXAMPLE",
+          "type": "AWS Access Key",
+          "pattern": "AKIA[0-9A-Z]{16}",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        }
+      ],
+      "suspicious_functions": [
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 36,
+          "context": "// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 37,
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "function (",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 23,
+          "context": "    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization\n      document.getElementById('message').innerHTML = 'User ' + userId + ' deleted successfully';\n    }\n  });",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 65,
+          "context": "  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {\n    document.body.innerHTML = event.data.content;\n  }\n});",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "\\.appendChild\\s*\\(",
+          "match": ".appendChild(",
+          "line": 80,
+          "context": "  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);\n}\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 72,
+          "context": "function redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;\n}\n",
+          "category": "Suspicious Functions"
+        }
+      ],
+      "sensitive_data": [
+        {
+          "pattern": "session[_-]?id[\"\\'\\s]*[:=]",
+          "match": "sessionId=",
+          "line": 86,
+          "context": "function setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}",
+          "category": "Sensitive Data"
+        }
+      ],
+      "dangerous_patterns": [
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 40,
+          "context": "\n  // Store in localStorage\n  localStorage.setItem('userData', JSON.stringify(result));\n\n  return result;",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "document\\.cookie\\s*=",
+          "match": "document.cookie =",
+          "line": 86,
+          "context": "function setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "document\\.cookie\\s*=",
+          "match": "document.cookie =",
+          "line": 87,
+          "context": "  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "addEventListener\\s*\\(\\s*[\"\\']message[\"\\']",
+          "match": "addEventListener('message'",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "category": "Dangerous Patterns"
+        }
+      ],
+      "functions": [
+        {
+          "name": "deleteUser",
+          "line": 10,
+          "context": "\n// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n"
+        },
+        {
+          "name": "isAdmin",
+          "line": 29,
+          "context": "\n// Admin check function\nfunction isAdmin(user) {\n  // Vulnerable: Client-side admin check\n  return user.role === 'admin' || user.permissions.includes('admin');"
+        },
+        {
+          "name": "processUserData",
+          "line": 35,
+          "context": "\n// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');"
+        },
+        {
+          "name": "processPayment",
+          "line": 49,
+          "context": "const paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;"
+        },
+        {
+          "name": "redirectUser",
+          "line": 70,
+          "context": "\n// URL redirection\nfunction redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;"
+        },
+        {
+          "name": "loadScript",
+          "line": 76,
+          "context": "\n// Dynamic script loading\nfunction loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');"
+        },
+        {
+          "name": "setUserSession",
+          "line": 84,
+          "context": "\n// Cookie manipulation\nfunction setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';"
+        },
+        {
+          "name": "searchUsers",
+          "line": 91,
+          "context": "\n// Database query (client-side)\nfunction searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';"
+        },
+        {
+          "name": "uploadFile",
+          "line": 98,
+          "context": "\n// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);"
+        },
+        {
+          "name": "response",
+          "line": 20,
+          "context": "      'Content-Type': 'application/json'\n    }\n  }).then(response => {\n    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization"
+        }
+      ],
+      "variables": [
+        {
+          "name": "API_BASE",
+          "line": 5,
+          "context": "\n// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';"
+        },
+        {
+          "name": "SECRET_KEY",
+          "line": 6,
+          "context": "// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n"
+        },
+        {
+          "name": "AWS_ACCESS_KEY",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        },
+        {
+          "name": "endpoint",
+          "line": 11,
+          "context": "// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n\n  // Vulnerable: No authentication check"
+        },
+        {
+          "name": "result",
+          "line": 37,
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage"
+        },
+        {
+          "name": "STRIPE_PUBLIC_KEY",
+          "line": 46,
+          "context": "\n// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n"
+        },
+        {
+          "name": "paymentEndpoint",
+          "line": 47,
+          "context": "// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {"
+        },
+        {
+          "name": "url",
+          "line": 51,
+          "context": "function processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;\n\n  fetch(url, {"
+        },
+        {
+          "name": "script",
+          "line": 78,
+          "context": "function loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);"
+        },
+        {
+          "name": "searchEndpoint",
+          "line": 93,
+          "context": "function searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';\n  return fetch(searchEndpoint);\n}"
+        },
+        {
+          "name": "formData",
+          "line": 99,
+          "context": "// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);\n"
+        }
+      ],
+      "imports": [],
+      "exports": []
+    },
+    "ai_analysis": {
+      "enabled": false,
+      "vulnerabilities": [],
+      "attack_vectors": [],
+      "security_score": 0,
+      "recommendations": []
+    },
+    "timestamp": "2025-07-30T10:17:05.176528"
+  }
+]

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSFlow AI - Security Analysis Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --severity-critical: #dc3545;
+            --severity-high: #fd7e14;
+            --severity-medium: #ffc107;
+            --severity-low: #28a745;
+            --bg-light: #f8f9fa;
+            --border-light: #dee2e6;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--bg-light);
+            border-bottom: 1px solid var(--border-light);
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .severity-badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-critical {
+            background-color: var(--severity-critical);
+            color: white;
+        }
+
+        .severity-high {
+            background-color: var(--severity-high);
+            color: white;
+        }
+
+        .severity-medium {
+            background-color: var(--severity-medium);
+            color: black;
+        }
+
+        .severity-low {
+            background-color: var(--severity-low);
+            color: white;
+        }
+
+        .vulnerability-card {
+            border-left: 4px solid var(--severity-medium);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .vulnerability-card.critical {
+            border-left-color: var(--severity-critical);
+        }
+
+        .vulnerability-card.high {
+            border-left-color: var(--severity-high);
+        }
+
+        .vulnerability-card.medium {
+            border-left-color: var(--severity-medium);
+        }
+
+        .vulnerability-card.low {
+            border-left-color: var(--severity-low);
+        }
+
+        .attack-vector {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-radius: 8px;
+            border-left: 4px solid #e17055;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, #d1ecf1, #74b9ff);
+            border-radius: 8px;
+            border-left: 4px solid #0984e3;
+        }
+
+        .code-snippet {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+
+        .security-score {
+            position: relative;
+            display: inline-block;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            margin: 0 auto;
+        }
+
+        .score-excellent { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .score-good { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+        .score-fair { background: linear-gradient(135deg, #fdcb6e, #f39c12); }
+        .score-poor { background: linear-gradient(135deg, #e17055, #d63031); }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .endpoint-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .secret-item {
+            background-color: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .collapsible-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-header i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-tabs {
+            margin-bottom: 2rem;
+        }
+
+        .filter-tabs .nav-link {
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 1rem 0;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>JSFlow AI
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="fas fa-clock me-1"></i>Generated: <span id="timestamp"></span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-3">Security Analysis Report</h1>
+                    <p class="lead mb-0">Comprehensive JavaScript security analysis powered by AI</p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="security-score">
+                        <div class="score-circle score-good" id="overallScore">
+                            <span id="scoreValue">85</span>
+                        </div>
+                        <p class="mt-2 mb-0">Overall Security Score</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Summary Statistics -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card" style="background: linear-gradient(135deg, #74b9ff, #0984e3);">
+                    <div class="stat-number text-white" id="totalFiles">0</div>
+                    <div class="text-white">
+                        <i class="fas fa-file-code me-2"></i>Files Analyzed
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card" style="background: linear-gradient(135deg, #fd79a8, #e84393);">
+                    <div class="stat-number text-white" id="totalVulns">0</div>
+                    <div class="text-white">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Vulnerabilities
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card" style="background: linear-gradient(135deg, #fdcb6e, #e17055);">
+                    <div class="stat-number text-white" id="totalEndpoints">0</div>
+                    <div class="text-white">
+                        <i class="fas fa-globe me-2"></i>API Endpoints
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card" style="background: linear-gradient(135deg, #ffeaa7, #f39c12);">
+                    <div class="stat-number text-white" id="totalSecrets">0</div>
+                    <div class="text-white">
+                        <i class="fas fa-key me-2"></i>Secrets Found
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Severity Distribution -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Vulnerability Severity Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="display-6 text-danger" id="criticalCount">0</div>
+                                <div class="text-muted">Critical</div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-6 text-warning" id="highCount">0</div>
+                                <div class="text-muted">High</div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-6 text-info" id="mediumCount">0</div>
+                                <div class="text-muted">Medium</div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-6 text-success" id="lowCount">0</div>
+                                <div class="text-muted">Low</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <ul class="nav nav-pills filter-tabs justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link active" data-filter="all" href="#" onclick="filterResults('all')">
+                    <i class="fas fa-list me-1"></i>All Results
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-filter="vulnerabilities" href="#" onclick="filterResults('vulnerabilities')">
+                    <i class="fas fa-bug me-1"></i>Vulnerabilities
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-filter="endpoints" href="#" onclick="filterResults('endpoints')">
+                    <i class="fas fa-globe me-1"></i>Endpoints
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-filter="secrets" href="#" onclick="filterResults('secrets')">
+                    <i class="fas fa-key me-1"></i>Secrets
+                </a>
+            </li>
+        </ul>
+
+        <!-- Analysis Results -->
+        <div id="analysisResults">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-5 py-4 text-center text-muted border-top">
+            <div class="container">
+                <p class="mb-1">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    JSFlow AI - JavaScript Security Analysis Tool
+                </p>
+                <p class="mb-0">
+                    <small>Powered by OpenAI GPT-4o and advanced pattern matching</small>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
+    
+    <script>
+        // Global variables for analysis data
+        let analysisData = [];
+        let currentFilter = 'all';
+
+        // Initialize the report
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set timestamp
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            
+            // Load sample data for demonstration
+            loadSampleData();
+            
+            // Populate the report
+            populateReport();
+        });
+
+        function loadSampleData() {
+            // This would be replaced with actual data from the Python script
+            analysisData = [
+                {
+                    file_path: "test_samples/sample1.js",
+                    file_size: 3245,
+                    parsing_results: {
+                        endpoints: [
+                            "/api/users/{userId}/delete",
+                            "/api/payments/process",
+                            "/api/search",
+                            "/api/upload"
+                        ],
+                        secrets: [
+                            {
+                                value: "sk_test_1a2b3c4d5e6f7g8h9i0j",
+                                type: "Stripe Secret Key",
+                                line: 5
+                            },
+                            {
+                                value: "AKIAIOSFODNN7EXAMPLE",
+                                type: "AWS Access Key",
+                                line: 6
+                            }
+                        ],
+                        suspicious_functions: [
+                            {
+                                match: "eval(",
+                                line: 25,
+                                category: "Suspicious Functions"
+                            }
+                        ]
+                    },
+                    ai_analysis: {
+                        enabled: true,
+                        security_score: 35,
+                        vulnerabilities: [
+                            {
+                                type: "Cross-Site Scripting (XSS)",
+                                severity: "high",
+                                description: "Direct innerHTML assignment with user input without sanitization",
+                                location: "deleteUser function",
+                                cwe_id: "CWE-79"
+                            },
+                            {
+                                type: "Code Injection",
+                                severity: "critical",
+                                description: "Use of eval() function with user-controlled data",
+                                location: "processUserData function",
+                                cwe_id: "CWE-94"
+                            }
+                        ],
+                        attack_vectors: [
+                            {
+                                attack_type: "XSS Attack",
+                                method: "Inject malicious script via user input",
+                                payload: "<script>alert('XSS')</script>",
+                                target: "innerHTML assignment"
+                            }
+                        ]
+                    }
+                },
+                {
+                    file_path: "test_samples/sample2.js",
+                    file_size: 4567,
+                    parsing_results: {
+                        endpoints: [
+                            "/api/auth",
+                            "/api/users/{userId}",
+                            "/api/messages/send"
+                        ],
+                        secrets: [
+                            {
+                                value: "AIzaSyDOCAbC123",
+                                type: "Google API Key",
+                                line: 8
+                            }
+                        ]
+                    },
+                    ai_analysis: {
+                        enabled: true,
+                        security_score: 42,
+                        vulnerabilities: [
+                            {
+                                type: "Insecure Authentication",
+                                severity: "high",
+                                description: "Credentials passed in URL parameters",
+                                location: "authenticateUser function",
+                                cwe_id: "CWE-598"
+                            }
+                        ],
+                        attack_vectors: []
+                    }
+                }
+            ];
+        }
+
+        function populateReport() {
+            updateStatistics();
+            updateSeverityDistribution();
+            renderAnalysisResults();
+        }
+
+        function updateStatistics() {
+            const totalFiles = analysisData.length;
+            const totalVulns = analysisData.reduce((sum, result) => 
+                sum + (result.ai_analysis?.vulnerabilities?.length || 0), 0);
+            const totalEndpoints = analysisData.reduce((sum, result) => 
+                sum + (result.parsing_results?.endpoints?.length || 0), 0);
+            const totalSecrets = analysisData.reduce((sum, result) => 
+                sum + (result.parsing_results?.secrets?.length || 0), 0);
+
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('totalVulns').textContent = totalVulns;
+            document.getElementById('totalEndpoints').textContent = totalEndpoints;
+            document.getElementById('totalSecrets').textContent = totalSecrets;
+
+            // Update overall security score
+            const avgScore = analysisData.reduce((sum, result) => 
+                sum + (result.ai_analysis?.security_score || 0), 0) / totalFiles;
+            document.getElementById('scoreValue').textContent = Math.round(avgScore);
+            
+            const scoreElement = document.getElementById('overallScore');
+            scoreElement.className = 'score-circle ' + getScoreClass(avgScore);
+        }
+
+        function updateSeverityDistribution() {
+            const severityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
+            
+            analysisData.forEach(result => {
+                const vulnerabilities = result.ai_analysis?.vulnerabilities || [];
+                vulnerabilities.forEach(vuln => {
+                    const severity = vuln.severity?.toLowerCase() || 'low';
+                    if (severityCounts.hasOwnProperty(severity)) {
+                        severityCounts[severity]++;
+                    }
+                });
+            });
+
+            document.getElementById('criticalCount').textContent = severityCounts.critical;
+            document.getElementById('highCount').textContent = severityCounts.high;
+            document.getElementById('mediumCount').textContent = severityCounts.medium;
+            document.getElementById('lowCount').textContent = severityCounts.low;
+        }
+
+        function renderAnalysisResults() {
+            const container = document.getElementById('analysisResults');
+            container.innerHTML = '';
+
+            analysisData.forEach((result, index) => {
+                const fileCard = createFileCard(result, index);
+                container.appendChild(fileCard);
+            });
+        }
+
+        function createFileCard(result, index) {
+            const card = document.createElement('div');
+            card.className = 'card fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
+
+            const fileName = result.file_path.split('/').pop();
+            const securityScore = result.ai_analysis?.security_score || 0;
+            const vulnerabilities = result.ai_analysis?.vulnerabilities || [];
+            const endpoints = result.parsing_results?.endpoints || [];
+            const secrets = result.parsing_results?.secrets || [];
+
+            card.innerHTML = `
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-code me-2"></i>${fileName}
+                    </h5>
+                    <div>
+                        <span class="badge bg-secondary me-2">${formatFileSize(result.file_size)}</span>
+                        <span class="badge ${getScoreBadgeClass(securityScore)}">${securityScore}/100</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            ${renderVulnerabilities(vulnerabilities)}
+                            ${renderEndpoints(endpoints)}
+                            ${renderSecrets(secrets)}
+                        </div>
+                        <div class="col-md-4">
+                            ${renderQuickStats(result)}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function renderVulnerabilities(vulnerabilities) {
+            if (vulnerabilities.length === 0) {
+                return '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>No vulnerabilities detected</div>';
+            }
+
+            let html = '<div class="section-header"><h6><i class="fas fa-bug"></i>Vulnerabilities</h6></div>';
+            
+            vulnerabilities.forEach(vuln => {
+                html += `
+                    <div class="vulnerability-card card ${vuln.severity}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">${vuln.type}</h6>
+                                <span class="severity-badge severity-${vuln.severity}">${vuln.severity}</span>
+                            </div>
+                            <p class="mb-2">${vuln.description}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>${vuln.location || 'Unknown location'}
+                                </small>
+                                <small class="text-muted">${vuln.cwe_id || ''}</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function renderEndpoints(endpoints) {
+            if (endpoints.length === 0) return '';
+
+            let html = '<div class="section-header"><h6><i class="fas fa-globe"></i>API Endpoints</h6></div>';
+            html += '<div class="endpoint-list">';
+            
+            endpoints.forEach(endpoint => {
+                html += `<div class="mb-2"><code class="p-2 bg-light rounded">${endpoint}</code></div>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderSecrets(secrets) {
+            if (secrets.length === 0) return '';
+
+            let html = '<div class="section-header"><h6><i class="fas fa-key"></i>Potential Secrets</h6></div>';
+            
+            secrets.forEach(secret => {
+                const maskedValue = secret.value.substring(0, 4) + '*'.repeat(secret.value.length - 4);
+                html += `
+                    <div class="secret-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-warning me-2">${secret.type}</span>
+                                <code>${maskedValue}</code>
+                            </div>
+                            <small class="text-muted">Line ${secret.line}</small>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function renderQuickStats(result) {
+            const vulnerabilities = result.ai_analysis?.vulnerabilities || [];
+            const endpoints = result.parsing_results?.endpoints || [];
+            const secrets = result.parsing_results?.secrets || [];
+
+            return `
+                <div class="border rounded p-3">
+                    <h6 class="mb-3">Quick Stats</h6>
+                    <div class="mb-2">
+                        <i class="fas fa-bug text-danger me-2"></i>
+                        <span>${vulnerabilities.length} Vulnerabilities</span>
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-globe text-info me-2"></i>
+                        <span>${endpoints.length} Endpoints</span>
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-key text-warning me-2"></i>
+                        <span>${secrets.length} Secrets</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterResults(filter) {
+            currentFilter = filter;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tabs .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+
+            // Re-render results (in a real implementation, this would filter the data)
+            renderAnalysisResults();
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'score-excellent';
+            if (score >= 60) return 'score-good';
+            if (score >= 40) return 'score-fair';
+            return 'score-poor';
+        }
+
+        function getScoreBadgeClass(score) {
+            if (score >= 80) return 'bg-success';
+            if (score >= 60) return 'bg-info';
+            if (score >= 40) return 'bg-warning';
+            return 'bg-danger';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

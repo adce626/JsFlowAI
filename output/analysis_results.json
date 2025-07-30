@@ -1,0 +1,3122 @@
+[
+  {
+    "file_path": "test_samples/sample1.js",
+    "file_size": 3030,
+    "parsing_results": {
+      "file_path": "test_samples/sample1.js",
+      "endpoints": [
+        "/api/payments/process",
+        "/api/upload",
+        "/api/search?q=",
+        "/scripts/",
+        "/api/users/",
+        "/delete"
+      ],
+      "secrets": [
+        {
+          "value": "AKIAIOSFODNN7EXAMPLE",
+          "type": "AWS Access Key (CRITICAL)",
+          "pattern": "[\"\\'][A-Za-z0-9]{20,}[\"\\']",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        },
+        {
+          "value": "STRIPE_PUBLIC_KEY",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 56,
+          "context": "    method: 'POST',\n    headers: {\n      'X-API-Key': STRIPE_PUBLIC_KEY\n    }\n  });"
+        },
+        {
+          "value": "sk_test_1a2b3c4d5e6f7g8h9i0j",
+          "type": "Stripe Test Secret Key (MEDIUM)",
+          "pattern": "secret[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 6,
+          "context": "// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n"
+        },
+        {
+          "value": "Bearer",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "authorization[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]+)",
+          "line": 17,
+          "context": "    method: 'DELETE',\n    headers: {\n      'Authorization': 'Bearer ' + SECRET_KEY,\n      'Content-Type': 'application/json'\n    }"
+        },
+        {
+          "value": "STRIPE_PUBLIC_KEY",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "x[_-]api[_-]key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]+)",
+          "line": 56,
+          "context": "    method: 'POST',\n    headers: {\n      'X-API-Key': STRIPE_PUBLIC_KEY\n    }\n  });"
+        },
+        {
+          "value": "AKIAIOSFODNN7EXAMPLE",
+          "type": "AWS Access Key (CRITICAL)",
+          "pattern": "AKIA[0-9A-Z]{16}",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        }
+      ],
+      "suspicious_functions": [
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 36,
+          "context": "// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 37,
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "function (",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 23,
+          "context": "    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization\n      document.getElementById('message').innerHTML = 'User ' + userId + ' deleted successfully';\n    }\n  });",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 65,
+          "context": "  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {\n    document.body.innerHTML = event.data.content;\n  }\n});",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "\\.appendChild\\s*\\(",
+          "match": ".appendChild(",
+          "line": 80,
+          "context": "  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);\n}\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 72,
+          "context": "function redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;\n}\n",
+          "category": "Suspicious Functions"
+        }
+      ],
+      "sensitive_data": [
+        {
+          "pattern": "session[_-]?id[\"\\'\\s]*[:=]",
+          "match": "sessionId=",
+          "line": 86,
+          "context": "function setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}",
+          "category": "Sensitive Data"
+        }
+      ],
+      "dangerous_patterns": [
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 40,
+          "context": "\n  // Store in localStorage\n  localStorage.setItem('userData', JSON.stringify(result));\n\n  return result;",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "document\\.cookie\\s*=",
+          "match": "document.cookie =",
+          "line": 86,
+          "context": "function setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "document\\.cookie\\s*=",
+          "match": "document.cookie =",
+          "line": 87,
+          "context": "  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "addEventListener\\s*\\(\\s*[\"\\']message[\"\\']",
+          "match": "addEventListener('message'",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "category": "Dangerous Patterns"
+        }
+      ],
+      "functions": [
+        {
+          "name": "deleteUser",
+          "line": 10,
+          "context": "\n// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n"
+        },
+        {
+          "name": "isAdmin",
+          "line": 29,
+          "context": "\n// Admin check function\nfunction isAdmin(user) {\n  // Vulnerable: Client-side admin check\n  return user.role === 'admin' || user.permissions.includes('admin');"
+        },
+        {
+          "name": "processUserData",
+          "line": 35,
+          "context": "\n// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');"
+        },
+        {
+          "name": "processPayment",
+          "line": 49,
+          "context": "const paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;"
+        },
+        {
+          "name": "redirectUser",
+          "line": 70,
+          "context": "\n// URL redirection\nfunction redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;"
+        },
+        {
+          "name": "loadScript",
+          "line": 76,
+          "context": "\n// Dynamic script loading\nfunction loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');"
+        },
+        {
+          "name": "setUserSession",
+          "line": 84,
+          "context": "\n// Cookie manipulation\nfunction setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';"
+        },
+        {
+          "name": "searchUsers",
+          "line": 91,
+          "context": "\n// Database query (client-side)\nfunction searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';"
+        },
+        {
+          "name": "uploadFile",
+          "line": 98,
+          "context": "\n// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);"
+        },
+        {
+          "name": "response",
+          "line": 20,
+          "context": "      'Content-Type': 'application/json'\n    }\n  }).then(response => {\n    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization"
+        }
+      ],
+      "variables": [
+        {
+          "name": "API_BASE",
+          "line": 5,
+          "context": "\n// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';"
+        },
+        {
+          "name": "SECRET_KEY",
+          "line": 6,
+          "context": "// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n"
+        },
+        {
+          "name": "AWS_ACCESS_KEY",
+          "line": 7,
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        },
+        {
+          "name": "endpoint",
+          "line": 11,
+          "context": "// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n\n  // Vulnerable: No authentication check"
+        },
+        {
+          "name": "result",
+          "line": 37,
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage"
+        },
+        {
+          "name": "STRIPE_PUBLIC_KEY",
+          "line": 46,
+          "context": "\n// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n"
+        },
+        {
+          "name": "paymentEndpoint",
+          "line": 47,
+          "context": "// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {"
+        },
+        {
+          "name": "url",
+          "line": 51,
+          "context": "function processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;\n\n  fetch(url, {"
+        },
+        {
+          "name": "script",
+          "line": 78,
+          "context": "function loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);"
+        },
+        {
+          "name": "searchEndpoint",
+          "line": 93,
+          "context": "function searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';\n  return fetch(searchEndpoint);\n}"
+        },
+        {
+          "name": "formData",
+          "line": 99,
+          "context": "// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);\n"
+        }
+      ],
+      "imports": [],
+      "exports": []
+    },
+    "data_flow_analysis": {
+      "file_path": "test_samples/sample1.js",
+      "data_flows": [],
+      "dangerous_flows": [
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 64,
+          "sink_line": 65,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.type === 'user_data') {\nSink: document.body.innerHTML = event.data.content;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 65,
+          "sink_line": 65,
+          "risk_level": "HIGH",
+          "context": "Source: document.body.innerHTML = event.data.content;\nSink: document.body.innerHTML = event.data.content;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "window\\.location",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 72,
+          "sink_line": 72,
+          "risk_level": "HIGH",
+          "context": "Source: window.location.href = url;\nSink: window.location.href = url;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 72,
+          "sink_line": 72,
+          "risk_level": "HIGH",
+          "context": "Source: window.location.href = url;\nSink: window.location.href = url;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "storage",
+          "source_pattern": "document\\.cookie",
+          "sink_pattern": "document\\.cookie\\s*=",
+          "source_line": 86,
+          "sink_line": 86,
+          "risk_level": "MEDIUM",
+          "context": "Source: document.cookie = 'sessionId=' + sessionId + ';path=/';\nSink: document.cookie = 'sessionId=' + sessionId + ';path=/';"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "storage",
+          "source_pattern": "document\\.cookie",
+          "sink_pattern": "document\\.cookie\\s*=",
+          "source_line": 86,
+          "sink_line": 87,
+          "risk_level": "MEDIUM",
+          "context": "Source: document.cookie = 'sessionId=' + sessionId + ';path=/';\nSink: document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "storage",
+          "source_pattern": "document\\.cookie",
+          "sink_pattern": "document\\.cookie\\s*=",
+          "source_line": 87,
+          "sink_line": 86,
+          "risk_level": "MEDIUM",
+          "context": "Source: document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\nSink: document.cookie = 'sessionId=' + sessionId + ';path=/';"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "storage",
+          "source_pattern": "document\\.cookie",
+          "sink_pattern": "document\\.cookie\\s*=",
+          "source_line": 87,
+          "sink_line": 87,
+          "risk_level": "MEDIUM",
+          "context": "Source: document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\nSink: document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "data\\.",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 64,
+          "sink_line": 65,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.type === 'user_data') {\nSink: document.body.innerHTML = event.data.content;"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "data\\.",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 65,
+          "sink_line": 65,
+          "risk_level": "HIGH",
+          "context": "Source: document.body.innerHTML = event.data.content;\nSink: document.body.innerHTML = event.data.content;"
+        }
+      ],
+      "function_calls": [
+        {
+          "function": "deleteUser",
+          "line": 10,
+          "context": "\n// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n",
+          "position": 338
+        },
+        {
+          "function": "fetch",
+          "line": 14,
+          "context": "\n  // Vulnerable: No authentication check\n  fetch(API_BASE + endpoint, {\n    method: 'DELETE',\n    headers: {",
+          "position": 458
+        },
+        {
+          "function": "then",
+          "line": 20,
+          "context": "      'Content-Type': 'application/json'\n    }\n  }).then(response => {\n    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization",
+          "position": 623
+        },
+        {
+          "function": "if",
+          "line": 21,
+          "context": "    }\n  }).then(response => {\n    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization\n      document.getElementById('message').innerHTML = 'User ' + userId + ' deleted successfully';",
+          "position": 646
+        },
+        {
+          "function": "getElementById",
+          "line": 23,
+          "context": "    if (response.ok) {\n      // Vulnerable: Using innerHTML without sanitization\n      document.getElementById('message').innerHTML = 'User ' + userId + ' deleted successfully';\n    }\n  });",
+          "position": 738
+        },
+        {
+          "function": "isAdmin",
+          "line": 29,
+          "context": "\n// Admin check function\nfunction isAdmin(user) {\n  // Vulnerable: Client-side admin check\n  return user.role === 'admin' || user.permissions.includes('admin');",
+          "position": 868
+        },
+        {
+          "function": "includes",
+          "line": 31,
+          "context": "function isAdmin(user) {\n  // Vulnerable: Client-side admin check\n  return user.role === 'admin' || user.permissions.includes('admin');\n}\n",
+          "position": 976
+        },
+        {
+          "function": "processUserData",
+          "line": 35,
+          "context": "\n// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');",
+          "position": 1026
+        },
+        {
+          "function": "eval",
+          "line": 36,
+          "context": "// Data processing\nfunction processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n",
+          "position": 1067
+        },
+        {
+          "function": "eval",
+          "line": 37,
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage",
+          "position": 1097
+        },
+        {
+          "function": "setItem",
+          "line": 40,
+          "context": "\n  // Store in localStorage\n  localStorage.setItem('userData', JSON.stringify(result));\n\n  return result;",
+          "position": 1164
+        },
+        {
+          "function": "stringify",
+          "line": 40,
+          "context": "\n  // Store in localStorage\n  localStorage.setItem('userData', JSON.stringify(result));\n\n  return result;",
+          "position": 1189
+        },
+        {
+          "function": "processPayment",
+          "line": 49,
+          "context": "const paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;",
+          "position": 1366
+        },
+        {
+          "function": "fetch",
+          "line": 53,
+          "context": "  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;\n\n  fetch(url, {\n    method: 'POST',\n    headers: {",
+          "position": 1528
+        },
+        {
+          "function": "addEventListener",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "position": 1655
+        },
+        {
+          "function": "function",
+          "line": 62,
+          "context": "\n// Message handling\nwindow.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {",
+          "position": 1683
+        },
+        {
+          "function": "if",
+          "line": 64,
+          "context": "window.addEventListener('message', function (event) {\n  // Vulnerable: No origin validation\n  if (event.data.type === 'user_data') {\n    document.body.innerHTML = event.data.content;\n  }",
+          "position": 1742
+        },
+        {
+          "function": "redirectUser",
+          "line": 70,
+          "context": "\n// URL redirection\nfunction redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;",
+          "position": 1868
+        },
+        {
+          "function": "loadScript",
+          "line": 76,
+          "context": "\n// Dynamic script loading\nfunction loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');",
+          "position": 1987
+        },
+        {
+          "function": "createElement",
+          "line": 78,
+          "context": "function loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);",
+          "position": 2080
+        },
+        {
+          "function": "appendChild",
+          "line": 80,
+          "context": "  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);\n}\n",
+          "position": 2170
+        },
+        {
+          "function": "setUserSession",
+          "line": 84,
+          "context": "\n// Cookie manipulation\nfunction setUserSession(sessionId, userData) {\n  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';",
+          "position": 2226
+        },
+        {
+          "function": "stringify",
+          "line": 87,
+          "context": "  // Vulnerable: No secure flag, httpOnly\n  document.cookie = 'sessionId=' + sessionId + ';path=/';\n  document.cookie = 'userData=' + JSON.stringify(userData) + ';path=/';\n}\n",
+          "position": 2403
+        },
+        {
+          "function": "query",
+          "line": 90,
+          "context": "}\n\n// Database query (client-side)\nfunction searchUsers(query) {\n  // Vulnerable: Potential injection",
+          "position": 2451
+        },
+        {
+          "function": "searchUsers",
+          "line": 91,
+          "context": "\n// Database query (client-side)\nfunction searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';",
+          "position": 2480
+        },
+        {
+          "function": "fetch",
+          "line": 94,
+          "context": "  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';\n  return fetch(searchEndpoint);\n}\n",
+          "position": 2614
+        },
+        {
+          "function": "uploadFile",
+          "line": 98,
+          "context": "\n// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);",
+          "position": 2664
+        },
+        {
+          "function": "FormData",
+          "line": 99,
+          "context": "// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);\n",
+          "position": 2706
+        },
+        {
+          "function": "append",
+          "line": 100,
+          "context": "function uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);\n\n  // Vulnerable: No file type validation",
+          "position": 2729
+        },
+        {
+          "function": "fetch",
+          "line": 103,
+          "context": "\n  // Vulnerable: No file type validation\n  fetch('/api/upload', {\n    method: 'POST',\n    body: formData",
+          "position": 2795
+        }
+      ],
+      "variable_flows": [
+        {
+          "variable": "API_BASE",
+          "assignment": "'https://api.example.com'",
+          "line": 5,
+          "dangerous_usage": [],
+          "context": "\n// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';"
+        },
+        {
+          "variable": "SECRET_KEY",
+          "assignment": "'sk_test_1a2b3c4d5e6f7g8h9i0j'",
+          "line": 6,
+          "dangerous_usage": [],
+          "context": "// API endpoints and sensitive data\nconst API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n"
+        },
+        {
+          "variable": "AWS_ACCESS_KEY",
+          "assignment": "'AKIAIOSFODNN7EXAMPLE'",
+          "line": 7,
+          "dangerous_usage": [],
+          "context": "const API_BASE = 'https://api.example.com';\nconst SECRET_KEY = 'sk_test_1a2b3c4d5e6f7g8h9i0j';\nconst AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';\n\n// User management functions"
+        },
+        {
+          "variable": "endpoint",
+          "assignment": "'/api/users/' + userId + '/delete'",
+          "line": 11,
+          "dangerous_usage": [],
+          "context": "// User management functions\nfunction deleteUser(userId) {\n  const endpoint = '/api/users/' + userId + '/delete';\n\n  // Vulnerable: No authentication check"
+        },
+        {
+          "variable": "result",
+          "assignment": "eval('(' + data + ')')",
+          "line": 37,
+          "dangerous_usage": [
+            {
+              "sink_type": "code_execution",
+              "pattern": "eval\\(",
+              "line": 37,
+              "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage"
+            },
+            {
+              "sink_type": "storage",
+              "pattern": "localStorage\\.setItem",
+              "line": 40,
+              "context": "\n  // Store in localStorage\n  localStorage.setItem('userData', JSON.stringify(result));\n\n  return result;"
+            }
+          ],
+          "context": "function processUserData(data) {\n  // Vulnerable: eval() usage\n  const result = eval('(' + data + ')');\n\n  // Store in localStorage"
+        },
+        {
+          "variable": "STRIPE_PUBLIC_KEY",
+          "assignment": "'pk_test_51234567890abcdef'",
+          "line": 46,
+          "dangerous_usage": [],
+          "context": "\n// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n"
+        },
+        {
+          "variable": "paymentEndpoint",
+          "assignment": "'/api/payments/process'",
+          "line": 47,
+          "dangerous_usage": [],
+          "context": "// Payment processing\nconst STRIPE_PUBLIC_KEY = 'pk_test_51234567890abcdef';\nconst paymentEndpoint = '/api/payments/process';\n\nfunction processPayment(cardData) {"
+        },
+        {
+          "variable": "url",
+          "assignment": "paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv",
+          "line": 51,
+          "dangerous_usage": [
+            {
+              "sink_type": "navigation",
+              "pattern": "location\\.href\\s*=",
+              "line": 72,
+              "context": "function redirectUser(url) {\n  // Vulnerable: Open redirect\n  window.location.href = url;\n}\n"
+            }
+          ],
+          "context": "function processPayment(cardData) {\n  // Vulnerable: Sending sensitive data in URL\n  const url = paymentEndpoint + '?card=' + cardData.number + '&cvv=' + cardData.cvv;\n\n  fetch(url, {"
+        },
+        {
+          "variable": "script",
+          "assignment": "document.createElement('script')",
+          "line": 78,
+          "dangerous_usage": [
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "appendChild",
+              "line": 80,
+              "context": "  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);\n}\n"
+            }
+          ],
+          "context": "function loadScript(scriptName) {\n  // Vulnerable: Dynamic script injection\n  const script = document.createElement('script');\n  script.src = '/scripts/' + scriptName + '.js';\n  document.head.appendChild(script);"
+        },
+        {
+          "variable": "searchEndpoint",
+          "assignment": "'/api/search?q=' + query + '&type=users'",
+          "line": 93,
+          "dangerous_usage": [],
+          "context": "function searchUsers(query) {\n  // Vulnerable: Potential injection\n  const searchEndpoint = '/api/search?q=' + query + '&type=users';\n  return fetch(searchEndpoint);\n}"
+        },
+        {
+          "variable": "formData",
+          "assignment": "new FormData()",
+          "line": 99,
+          "dangerous_usage": [],
+          "context": "// File upload\nfunction uploadFile(file) {\n  const formData = new FormData();\n  formData.append('file', file);\n"
+        }
+      ],
+      "security_implications": [
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 64,
+          "sink_line": 65,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 65,
+          "sink_line": 65,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 72,
+          "sink_line": 72,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 72,
+          "sink_line": 72,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 86,
+          "sink_line": 86,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 86,
+          "sink_line": 87,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 87,
+          "sink_line": 86,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 87,
+          "sink_line": 87,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "HIGH",
+          "description": "API response data is inserted into DOM without proper validation.",
+          "attack_vector": "Compromise API to return malicious content that gets rendered in the browser.",
+          "source_line": 64,
+          "sink_line": 65,
+          "remediation": "Validate and sanitize all API responses before DOM insertion."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "HIGH",
+          "description": "API response data is inserted into DOM without proper validation.",
+          "attack_vector": "Compromise API to return malicious content that gets rendered in the browser.",
+          "source_line": 65,
+          "sink_line": 65,
+          "remediation": "Validate and sanitize all API responses before DOM insertion."
+        }
+      ]
+    },
+    "ai_analysis": {
+      "enabled": true,
+      "error": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "vulnerabilities": [],
+      "attack_vectors": [],
+      "security_score": 0,
+      "recommendations": []
+    },
+    "timestamp": "2025-07-30T10:33:42.669562"
+  },
+  {
+    "file_path": "test_samples/sample2.js",
+    "file_size": 4799,
+    "parsing_results": {
+      "file_path": "test_samples/sample2.js",
+      "endpoints": [
+        "/api/admin/users/deleteAll",
+        "/api/messages/send"
+      ],
+      "secrets": [
+        {
+          "value": "AIzaSyDOCAbC123",
+          "type": "Google API Key (MEDIUM)",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 9,
+          "context": "// Configuration with hardcoded secrets\nconst config = {\n  apiKey: 'AIzaSyDOCAbC123',\n  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',"
+        },
+        {
+          "value": "config",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 71,
+          "context": "      headers: {\n        'Authorization': `Bearer ${currentToken}`,\n        'X-API-Key': config.apiKey\n      }\n    });"
+        },
+        {
+          "value": "config.apiKey",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "x[_-]api[_-]key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]+)",
+          "line": 71,
+          "context": "      headers: {\n        'Authorization': `Bearer ${currentToken}`,\n        'X-API-Key': config.apiKey\n      }\n    });"
+        },
+        {
+          "value": "ghp_1234567890abcdef1234567890abcdef123456",
+          "type": "GitHub Personal Access Token (HIGH)",
+          "pattern": "token[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]{20,})",
+          "line": 12,
+          "context": "  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',\n  githubToken: 'ghp_1234567890abcdef1234567890abcdef123456'\n};\n"
+        },
+        {
+          "value": "ghp_1234567890abcdef1234567890abcdef1234",
+          "type": "GitHub Personal Access Token (HIGH)",
+          "pattern": "ghp_[A-Za-z0-9_]{36}",
+          "line": 12,
+          "context": "  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',\n  githubToken: 'ghp_1234567890abcdef1234567890abcdef123456'\n};\n"
+        },
+        {
+          "value": "1234567890abcdef1234567890abcdef",
+          "type": "MD5 Hash/Token (MEDIUM)",
+          "pattern": "[0-9a-f]{32}",
+          "line": 12,
+          "context": "  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',\n  githubToken: 'ghp_1234567890abcdef1234567890abcdef123456'\n};\n"
+        }
+      ],
+      "suspicious_functions": [
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "function (",
+          "line": 169,
+          "context": "\n// Global error handler\nwindow.onerror = function (msg, url, line, col, error) {\n  // Vulnerable: Sending error details to external service\n  fetch('https://external-logging.com/errors', {",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "InnerHTML =",
+          "line": 30,
+          "context": "  // Vulnerable: XSS through dangerouslySetInnerHTML\n  renderUserBio(bio) {\n    return < div dangerouslySetInnerHTML = {\n      {\n        __html: bio",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 127,
+          "context": "\n    // Vulnerable: Direct DOM manipulation with user input\n    document.getElementById('output').innerHTML = `Hello ${userInput}!`;\n  }\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 95,
+          "context": "    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }\n",
+          "category": "Suspicious Functions"
+        }
+      ],
+      "sensitive_data": [
+        {
+          "pattern": "password[\"\\'\\s]*[:=]",
+          "match": "password=",
+          "line": 41,
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "username[\"\\'\\s]*[:=]",
+          "match": "username=",
+          "line": 41,
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "email[\"\\'\\s]*[:=]",
+          "match": "email =",
+          "line": 116,
+          "context": "\n    if (filters.email) {\n      query += ` AND email = '${filters.email}'`;\n    }\n",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "Token:",
+          "line": 12,
+          "context": "  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',\n  githubToken: 'ghp_1234567890abcdef1234567890abcdef123456'\n};\n",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "Token =",
+          "line": 16,
+          "context": "\n// JWT token handling\nlet currentToken = null;\n\nclass UserComponent extends React.Component {",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "Token =",
+          "line": 45,
+          "context": "    try {\n      const response = await axios.get(authUrl);\n      currentToken = response.data.token;\n\n      // Vulnerable: Token stored in localStorage",
+          "category": "Sensitive Data"
+        }
+      ],
+      "dangerous_patterns": [
+        {
+          "pattern": "dangerouslySetInnerHTML",
+          "match": "dangerouslySetInnerHTML",
+          "line": 28,
+          "context": "  }\n\n  // Vulnerable: XSS through dangerouslySetInnerHTML\n  renderUserBio(bio) {\n    return < div dangerouslySetInnerHTML = {",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "dangerouslySetInnerHTML",
+          "match": "dangerouslySetInnerHTML",
+          "line": 30,
+          "context": "  // Vulnerable: XSS through dangerouslySetInnerHTML\n  renderUserBio(bio) {\n    return < div dangerouslySetInnerHTML = {\n      {\n        __html: bio",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${username}",
+          "line": 41,
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${password}",
+          "line": 41,
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${userId}",
+          "line": 65,
+          "context": "  // Data fetching with potential CSRF\n  async fetchUserData(userId) {\n    const userEndpoint = `/api/users/${userId}`;\n\n    // Vulnerable: No CSRF protection",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${currentToken}",
+          "line": 70,
+          "context": "    return axios.get(userEndpoint, {\n      headers: {\n        'Authorization': `Bearer ${currentToken}`,\n        'X-API-Key': config.apiKey\n      }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${fileId}",
+          "line": 94,
+          "context": "  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${filename}",
+          "line": 94,
+          "context": "  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${filters.name}",
+          "line": 112,
+          "context": "\n    if (filters.name) {\n      query += ` AND name = '${filters.name}'`;\n    }\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${filters.email}",
+          "line": 116,
+          "context": "\n    if (filters.email) {\n      query += ` AND email = '${filters.email}'`;\n    }\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${userInput}",
+          "line": 127,
+          "context": "\n    // Vulnerable: Direct DOM manipulation with user input\n    document.getElementById('output').innerHTML = `Hello ${userInput}!`;\n  }\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${message.content}",
+          "line": 137,
+          "context": "      // Vulnerable: No message validation\n      const message = JSON.parse(event.data);\n      document.body.innerHTML += `<div>${message.content}</div>`;\n    };\n  }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 48,
+          "context": "\n      // Vulnerable: Token stored in localStorage\n      localStorage.setItem('authToken', currentToken);\n\n      // Vulnerable: Admin check on client side",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "postMessage\\s*\\(",
+          "match": "postMessage(",
+          "line": 77,
+          "context": "\n  // Message posting function\n  async postMessage(message, recipientId) {\n    // Vulnerable: No input sanitization\n    const payload = {",
+          "category": "Dangerous Patterns"
+        }
+      ],
+      "functions": [
+        {
+          "name": "downloadFile",
+          "line": 91,
+          "context": "  }\n\n  // File download function\n  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility"
+        },
+        {
+          "name": "onerror",
+          "line": 169,
+          "context": "\n// Global error handler\nwindow.onerror = function (msg, url, line, col, error) {\n  // Vulnerable: Sending error details to external service\n  fetch('https://external-logging.com/errors', {"
+        }
+      ],
+      "variables": [
+        {
+          "name": "config",
+          "line": 8,
+          "context": "\n// Configuration with hardcoded secrets\nconst config = {\n  apiKey: 'AIzaSyDOCAbC123',\n  authDomain: 'myapp.firebaseapp.com',"
+        },
+        {
+          "name": "currentToken",
+          "line": 16,
+          "context": "\n// JWT token handling\nlet currentToken = null;\n\nclass UserComponent extends React.Component {"
+        },
+        {
+          "name": "authUrl",
+          "line": 41,
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {"
+        },
+        {
+          "name": "response",
+          "line": 44,
+          "context": "\n    try {\n      const response = await axios.get(authUrl);\n      currentToken = response.data.token;\n"
+        },
+        {
+          "name": "userEndpoint",
+          "line": 65,
+          "context": "  // Data fetching with potential CSRF\n  async fetchUserData(userId) {\n    const userEndpoint = `/api/users/${userId}`;\n\n    // Vulnerable: No CSRF protection"
+        },
+        {
+          "name": "payload",
+          "line": 79,
+          "context": "  async postMessage(message, recipientId) {\n    // Vulnerable: No input sanitization\n    const payload = {\n      content: message,\n      recipient: recipientId,"
+        },
+        {
+          "name": "messageEndpoint",
+          "line": 86,
+          "context": "\n    // Vulnerable endpoint\n    const messageEndpoint = '/api/messages/send';\n\n    return axios.post(messageEndpoint, payload);"
+        },
+        {
+          "name": "downloadUrl",
+          "line": 94,
+          "context": "  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }"
+        },
+        {
+          "name": "query",
+          "line": 109,
+          "context": "  buildUserQuery(filters) {\n    // Vulnerable: SQL injection potential\n    let query = 'SELECT * FROM users WHERE 1=1';\n\n    if (filters.name) {"
+        },
+        {
+          "name": "userInput",
+          "line": 124,
+          "context": "  // Event handlers\n  handleUserInput(event) {\n    const userInput = event.target.value;\n\n    // Vulnerable: Direct DOM manipulation with user input"
+        },
+        {
+          "name": "ws",
+          "line": 132,
+          "context": "  // WebSocket handling\n  initializeWebSocket() {\n    const ws = new WebSocket('ws://example.com/chat');\n\n    ws.onmessage = (event) => {"
+        },
+        {
+          "name": "message",
+          "line": 136,
+          "context": "    ws.onmessage = (event) => {\n      // Vulnerable: No message validation\n      const message = JSON.parse(event.data);\n      document.body.innerHTML += `<div>${message.content}</div>`;\n    };"
+        }
+      ],
+      "imports": [
+        {
+          "module": "react",
+          "line": 4,
+          "context": "// React-like component with security vulnerabilities\n\nimport React from 'react';\nimport axios from 'axios';\n"
+        },
+        {
+          "module": "axios",
+          "line": 5,
+          "context": "\nimport React from 'react';\nimport axios from 'axios';\n\n// Configuration with hardcoded secrets"
+        }
+      ],
+      "exports": []
+    },
+    "data_flow_analysis": {
+      "file_path": "test_samples/sample2.js",
+      "data_flows": [],
+      "dangerous_flows": [
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "window\\.location",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 95,
+          "sink_line": 95,
+          "risk_level": "HIGH",
+          "context": "Source: window.location.href = downloadUrl;\nSink: window.location.href = downloadUrl;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 95,
+          "sink_line": 95,
+          "risk_level": "HIGH",
+          "context": "Source: window.location.href = downloadUrl;\nSink: window.location.href = downloadUrl;"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "storage",
+          "source_pattern": "axios\\.(get|post|put|delete)",
+          "sink_pattern": "localStorage\\.setItem",
+          "source_line": 44,
+          "sink_line": 48,
+          "risk_level": "MEDIUM",
+          "context": "Source: const response = await axios.get(authUrl);\nSink: localStorage.setItem('authToken', currentToken);"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "storage",
+          "source_pattern": "data\\.",
+          "sink_pattern": "localStorage\\.setItem",
+          "source_line": 45,
+          "sink_line": 48,
+          "risk_level": "MEDIUM",
+          "context": "Source: currentToken = response.data.token;\nSink: localStorage.setItem('authToken', currentToken);"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "storage",
+          "source_pattern": "data\\.",
+          "sink_pattern": "localStorage\\.setItem",
+          "source_line": 51,
+          "sink_line": 48,
+          "risk_level": "MEDIUM",
+          "context": "Source: if (response.data.role === 'admin') {\nSink: localStorage.setItem('authToken', currentToken);"
+        }
+      ],
+      "function_calls": [
+        {
+          "function": "constructor",
+          "line": 19,
+          "context": "\nclass UserComponent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {",
+          "position": 491
+        },
+        {
+          "function": "super",
+          "line": 20,
+          "context": "class UserComponent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = {\n      users: [],",
+          "position": 516
+        },
+        {
+          "function": "renderUserBio",
+          "line": 29,
+          "context": "\n  // Vulnerable: XSS through dangerouslySetInnerHTML\n  renderUserBio(bio) {\n    return < div dangerouslySetInnerHTML = {\n      {",
+          "position": 682
+        },
+        {
+          "function": "authenticateUser",
+          "line": 39,
+          "context": "\n  // Authentication function\n  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;",
+          "position": 840
+        },
+        {
+          "function": "get",
+          "line": 44,
+          "context": "\n    try {\n      const response = await axios.get(authUrl);\n      currentToken = response.data.token;\n",
+          "position": 1049
+        },
+        {
+          "function": "setItem",
+          "line": 48,
+          "context": "\n      // Vulnerable: Token stored in localStorage\n      localStorage.setItem('authToken', currentToken);\n\n      // Vulnerable: Admin check on client side",
+          "position": 1175
+        },
+        {
+          "function": "if",
+          "line": 51,
+          "context": "\n      // Vulnerable: Admin check on client side\n      if (response.data.role === 'admin') {\n        this.setState({\n          adminPanel: true",
+          "position": 1266
+        },
+        {
+          "function": "setState",
+          "line": 52,
+          "context": "      // Vulnerable: Admin check on client side\n      if (response.data.role === 'admin') {\n        this.setState({\n          adminPanel: true\n        });",
+          "position": 1317
+        },
+        {
+          "function": "catch",
+          "line": 58,
+          "context": "\n      return response.data;\n    } catch (error) {\n      console.error('Auth failed:', error);\n    }",
+          "position": 1410
+        },
+        {
+          "function": "error",
+          "line": 59,
+          "context": "      return response.data;\n    } catch (error) {\n      console.error('Auth failed:', error);\n    }\n  }",
+          "position": 1440
+        },
+        {
+          "function": "fetchUserData",
+          "line": 64,
+          "context": "\n  // Data fetching with potential CSRF\n  async fetchUserData(userId) {\n    const userEndpoint = `/api/users/${userId}`;\n",
+          "position": 1528
+        },
+        {
+          "function": "get",
+          "line": 68,
+          "context": "\n    // Vulnerable: No CSRF protection\n    return axios.get(userEndpoint, {\n      headers: {\n        'Authorization': `Bearer ${currentToken}`,",
+          "position": 1657
+        },
+        {
+          "function": "postMessage",
+          "line": 77,
+          "context": "\n  // Message posting function\n  async postMessage(message, recipientId) {\n    // Vulnerable: No input sanitization\n    const payload = {",
+          "position": 1839
+        },
+        {
+          "function": "Date",
+          "line": 82,
+          "context": "      content: message,\n      recipient: recipientId,\n      timestamp: new Date().toISOString()\n    };\n",
+          "position": 2013
+        },
+        {
+          "function": "toISOString",
+          "line": 82,
+          "context": "      content: message,\n      recipient: recipientId,\n      timestamp: new Date().toISOString()\n    };\n",
+          "position": 2020
+        },
+        {
+          "function": "post",
+          "line": 88,
+          "context": "    const messageEndpoint = '/api/messages/send';\n\n    return axios.post(messageEndpoint, payload);\n  }\n",
+          "position": 2137
+        },
+        {
+          "function": "downloadFile",
+          "line": 92,
+          "context": "\n  // File download function\n  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;",
+          "position": 2204
+        },
+        {
+          "function": "deleteAllUsers",
+          "line": 99,
+          "context": "\n  // Admin functions\n  deleteAllUsers() {\n    // Vulnerable: Mass deletion without proper authorization\n    if (this.state.adminPanel) {",
+          "position": 2429
+        },
+        {
+          "function": "if",
+          "line": 101,
+          "context": "  deleteAllUsers() {\n    // Vulnerable: Mass deletion without proper authorization\n    if (this.state.adminPanel) {\n      axios.delete('/api/admin/users/deleteAll');\n    }",
+          "position": 2514
+        },
+        {
+          "function": "delete",
+          "line": 102,
+          "context": "    // Vulnerable: Mass deletion without proper authorization\n    if (this.state.adminPanel) {\n      axios.delete('/api/admin/users/deleteAll');\n    }\n  }",
+          "position": 2555
+        },
+        {
+          "function": "builder",
+          "line": 106,
+          "context": "  }\n\n  // SQL query builder (client-side)\n  buildUserQuery(filters) {\n    // Vulnerable: SQL injection potential",
+          "position": 2619
+        },
+        {
+          "function": "buildUserQuery",
+          "line": 107,
+          "context": "\n  // SQL query builder (client-side)\n  buildUserQuery(filters) {\n    // Vulnerable: SQL injection potential\n    let query = 'SELECT * FROM users WHERE 1=1';",
+          "position": 2643
+        },
+        {
+          "function": "if",
+          "line": 111,
+          "context": "    let query = 'SELECT * FROM users WHERE 1=1';\n\n    if (filters.name) {\n      query += ` AND name = '${filters.name}'`;\n    }",
+          "position": 2766
+        },
+        {
+          "function": "if",
+          "line": 115,
+          "context": "    }\n\n    if (filters.email) {\n      query += ` AND email = '${filters.email}'`;\n    }",
+          "position": 2845
+        },
+        {
+          "function": "handleUserInput",
+          "line": 123,
+          "context": "\n  // Event handlers\n  handleUserInput(event) {\n    const userInput = event.target.value;\n",
+          "position": 2968
+        },
+        {
+          "function": "getElementById",
+          "line": 127,
+          "context": "\n    // Vulnerable: Direct DOM manipulation with user input\n    document.getElementById('output').innerHTML = `Hello ${userInput}!`;\n  }\n",
+          "position": 3108
+        },
+        {
+          "function": "initializeWebSocket",
+          "line": 131,
+          "context": "\n  // WebSocket handling\n  initializeWebSocket() {\n    const ws = new WebSocket('ws://example.com/chat');\n",
+          "position": 3199
+        },
+        {
+          "function": "WebSocket",
+          "line": 132,
+          "context": "  // WebSocket handling\n  initializeWebSocket() {\n    const ws = new WebSocket('ws://example.com/chat');\n\n    ws.onmessage = (event) => {",
+          "position": 3242
+        },
+        {
+          "function": "parse",
+          "line": 136,
+          "context": "    ws.onmessage = (event) => {\n      // Vulnerable: No message validation\n      const message = JSON.parse(event.data);\n      document.body.innerHTML += `<div>${message.content}</div>`;\n    };",
+          "position": 3381
+        },
+        {
+          "function": "render",
+          "line": 141,
+          "context": "  }\n\n  render() {\n    return ( <\n      div >",
+          "position": 3480
+        },
+        {
+          "function": "return",
+          "line": 142,
+          "context": "\n  render() {\n    return ( <\n      div >\n      <",
+          "position": 3495
+        },
+        {
+          "function": "deleteAllUsers",
+          "line": 150,
+          "context": "          <\n          button onClick = {\n            () => this.deleteAllUsers()\n          } >\n          Delete All Users <",
+          "position": 3679
+        },
+        {
+          "function": "configuration",
+          "line": 162,
+          "context": "}\n\n// Export configuration (exposing secrets)\nexport {\n  config,",
+          "position": 3832
+        },
+        {
+          "function": "function",
+          "line": 169,
+          "context": "\n// Global error handler\nwindow.onerror = function (msg, url, line, col, error) {\n  // Vulnerable: Sending error details to external service\n  fetch('https://external-logging.com/errors', {",
+          "position": 3945
+        },
+        {
+          "function": "fetch",
+          "line": 171,
+          "context": "window.onerror = function (msg, url, line, col, error) {\n  // Vulnerable: Sending error details to external service\n  fetch('https://external-logging.com/errors', {\n    method: 'POST',\n    body: JSON.stringify({",
+          "position": 4046
+        },
+        {
+          "function": "stringify",
+          "line": 173,
+          "context": "  fetch('https://external-logging.com/errors', {\n    method: 'POST',\n    body: JSON.stringify({\n      message: msg,\n      url: url,",
+          "position": 4128
+        }
+      ],
+      "variable_flows": [
+        {
+          "variable": "config",
+          "assignment": "{\n  apiKey: 'AIzaSyDOCAbC123',\n  authDomain: 'myapp.firebaseapp.com',\n  projectId: 'my-project-123',\n  githubToken: 'ghp_1234567890abcdef1234567890abcdef123456'\n}",
+          "line": 8,
+          "dangerous_usage": [],
+          "context": "\n// Configuration with hardcoded secrets\nconst config = {\n  apiKey: 'AIzaSyDOCAbC123',\n  authDomain: 'myapp.firebaseapp.com',"
+        },
+        {
+          "variable": "currentToken",
+          "assignment": "null",
+          "line": 16,
+          "dangerous_usage": [
+            {
+              "sink_type": "storage",
+              "pattern": "localStorage\\.setItem",
+              "line": 48,
+              "context": "\n      // Vulnerable: Token stored in localStorage\n      localStorage.setItem('authToken', currentToken);\n\n      // Vulnerable: Admin check on client side"
+            }
+          ],
+          "context": "\n// JWT token handling\nlet currentToken = null;\n\nclass UserComponent extends React.Component {"
+        },
+        {
+          "variable": "authUrl",
+          "assignment": "`/api/auth?username=${username}&password=${password}`",
+          "line": 41,
+          "dangerous_usage": [],
+          "context": "  async authenticateUser(username, password) {\n    // Vulnerable: Credentials in URL parameters\n    const authUrl = `/api/auth?username=${username}&password=${password}`;\n\n    try {"
+        },
+        {
+          "variable": "response",
+          "assignment": "await axios.get(authUrl)",
+          "line": 44,
+          "dangerous_usage": [],
+          "context": "\n    try {\n      const response = await axios.get(authUrl);\n      currentToken = response.data.token;\n"
+        },
+        {
+          "variable": "userEndpoint",
+          "assignment": "`/api/users/${userId}`",
+          "line": 65,
+          "dangerous_usage": [],
+          "context": "  // Data fetching with potential CSRF\n  async fetchUserData(userId) {\n    const userEndpoint = `/api/users/${userId}`;\n\n    // Vulnerable: No CSRF protection"
+        },
+        {
+          "variable": "payload",
+          "assignment": "{\n      content: message,\n      recipient: recipientId,\n      timestamp: new Date().toISOString()\n    }",
+          "line": 79,
+          "dangerous_usage": [],
+          "context": "  async postMessage(message, recipientId) {\n    // Vulnerable: No input sanitization\n    const payload = {\n      content: message,\n      recipient: recipientId,"
+        },
+        {
+          "variable": "messageEndpoint",
+          "assignment": "'/api/messages/send'",
+          "line": 86,
+          "dangerous_usage": [],
+          "context": "\n    // Vulnerable endpoint\n    const messageEndpoint = '/api/messages/send';\n\n    return axios.post(messageEndpoint, payload);"
+        },
+        {
+          "variable": "downloadUrl",
+          "assignment": "`/api/files/download/${fileId}?filename=${filename}`",
+          "line": 94,
+          "dangerous_usage": [
+            {
+              "sink_type": "navigation",
+              "pattern": "location\\.href\\s*=",
+              "line": 95,
+              "context": "    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }\n"
+            }
+          ],
+          "context": "  downloadFile(fileId, filename) {\n    // Vulnerable: Path traversal possibility\n    const downloadUrl = `/api/files/download/${fileId}?filename=${filename}`;\n    window.location.href = downloadUrl;\n  }"
+        },
+        {
+          "variable": "query",
+          "assignment": "'SELECT * FROM users WHERE 1=1'",
+          "line": 109,
+          "dangerous_usage": [],
+          "context": "  buildUserQuery(filters) {\n    // Vulnerable: SQL injection potential\n    let query = 'SELECT * FROM users WHERE 1=1';\n\n    if (filters.name) {"
+        },
+        {
+          "variable": "userInput",
+          "assignment": "event.target.value",
+          "line": 124,
+          "dangerous_usage": [
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "innerHTML\\s*=",
+              "line": 127,
+              "context": "\n    // Vulnerable: Direct DOM manipulation with user input\n    document.getElementById('output').innerHTML = `Hello ${userInput}!`;\n  }\n"
+            }
+          ],
+          "context": "  // Event handlers\n  handleUserInput(event) {\n    const userInput = event.target.value;\n\n    // Vulnerable: Direct DOM manipulation with user input"
+        },
+        {
+          "variable": "ws",
+          "assignment": "new WebSocket('ws://example.com/chat')",
+          "line": 132,
+          "dangerous_usage": [],
+          "context": "  // WebSocket handling\n  initializeWebSocket() {\n    const ws = new WebSocket('ws://example.com/chat');\n\n    ws.onmessage = (event) => {"
+        },
+        {
+          "variable": "message",
+          "assignment": "JSON.parse(event.data)",
+          "line": 136,
+          "dangerous_usage": [],
+          "context": "    ws.onmessage = (event) => {\n      // Vulnerable: No message validation\n      const message = JSON.parse(event.data);\n      document.body.innerHTML += `<div>${message.content}</div>`;\n    };"
+        }
+      ],
+      "security_implications": [
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 95,
+          "sink_line": 95,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 95,
+          "sink_line": 95,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 44,
+          "sink_line": 48,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 45,
+          "sink_line": 48,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 51,
+          "sink_line": 48,
+          "remediation": "Implement input validation and output encoding."
+        }
+      ]
+    },
+    "ai_analysis": {
+      "enabled": true,
+      "error": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "vulnerabilities": [],
+      "attack_vectors": [],
+      "security_score": 0,
+      "recommendations": []
+    },
+    "timestamp": "2025-07-30T10:33:44.570857"
+  },
+  {
+    "file_path": "test_samples/advanced_sample.js",
+    "file_size": 6453,
+    "parsing_results": {
+      "file_path": "test_samples/advanced_sample.js",
+      "endpoints": [
+        "/webhook/stripe",
+        "/admin/users",
+        "/api/internal/config",
+        "/api/v1/payments/process",
+        "/api/internal/secrets",
+        "/api/v1/users",
+        "/oauth/callback",
+        "/admin-panel",
+        "/admin/dashboard",
+        "/api/transfer"
+      ],
+      "secrets": [
+        {
+          "value": "AKIA1234567890ABCDEF",
+          "type": "AWS Access Key (CRITICAL)",
+          "pattern": "[\"\\'][A-Za-z0-9]{20,}[\"\\']",
+          "line": 6,
+          "context": "// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';"
+        },
+        {
+          "value": "AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN",
+          "type": "Google API Key (MEDIUM)",
+          "pattern": "[\"\\'][A-Za-z0-9]{20,}[\"\\']",
+          "line": 7,
+          "context": "const stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n"
+        },
+        {
+          "value": "AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN",
+          "type": "Google API Key (MEDIUM)",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 7,
+          "context": "const stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n"
+        },
+        {
+          "value": "googleApiKey",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "api[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 68,
+          "context": "      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!\n        'X-API-Key': googleApiKey // Exposed API key in client!\n      }\n    });"
+        },
+        {
+          "value": "sk_live_51234567890abcdefghijk",
+          "type": "Stripe Live Secret Key (CRITICAL)",
+          "pattern": "secret[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 5,
+          "context": "\n// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key"
+        },
+        {
+          "value": "stripeSecretKey",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "secret[_-]?key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9_-]+)",
+          "line": 87,
+          "context": "      headers: {\n        'Content-Type': 'application/json',\n        'X-Secret-Key': stripeSecretKey // Secret in headers!\n      }\n    });"
+        },
+        {
+          "value": "googleApiKey",
+          "type": "Unknown Secret (LOW)",
+          "pattern": "x[_-]api[_-]key[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]+)",
+          "line": 68,
+          "context": "      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!\n        'X-API-Key': googleApiKey // Exposed API key in client!\n      }\n    });"
+        },
+        {
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+          "type": "JWT Token (HIGH)",
+          "pattern": "eyJ[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]*",
+          "line": 8,
+          "context": "const awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)"
+        },
+        {
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+          "type": "JWT Token (HIGH)",
+          "pattern": "token[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]{20,})",
+          "line": 8,
+          "context": "const awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)"
+        },
+        {
+          "value": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+          "type": "GitHub Personal Access Token (HIGH)",
+          "pattern": "token[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]{20,})",
+          "line": 14,
+          "context": "\n// GitHub Token\nconst githubToken = 'ghp_1234567890abcdefghijklmnopqrstuvwxyz';\n\n// Dangerous Functions - Code Injection Vulnerabilities"
+        },
+        {
+          "value": "R_1234567890abcdef1234567890abcdef",
+          "type": "Rollbar Access Token (MEDIUM)",
+          "pattern": "token[\"\\'\\s]*[:=][\"\\'\\s]*([A-Za-z0-9._-]{20,})",
+          "line": 182,
+          "context": "  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'\n};"
+        },
+        {
+          "value": "AKIA1234567890ABCDEF",
+          "type": "AWS Access Key (CRITICAL)",
+          "pattern": "AKIA[0-9A-Z]{16}",
+          "line": 6,
+          "context": "// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';"
+        },
+        {
+          "value": "AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN",
+          "type": "Google API Key (MEDIUM)",
+          "pattern": "AIza[0-9A-Za-z_-]{35}",
+          "line": 7,
+          "context": "const stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n"
+        },
+        {
+          "value": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+          "type": "GitHub Personal Access Token (HIGH)",
+          "pattern": "ghp_[A-Za-z0-9_]{36}",
+          "line": 14,
+          "context": "\n// GitHub Token\nconst githubToken = 'ghp_1234567890abcdefghijklmnopqrstuvwxyz';\n\n// Dangerous Functions - Code Injection Vulnerabilities"
+        },
+        {
+          "value": "key-1234567890abcdef1234567890abcdef",
+          "type": "Mailgun API Key (MEDIUM)",
+          "pattern": "key-[0-9a-f]{32}",
+          "line": 181,
+          "context": "  'stripe_pk': 'pk_test_51234567890abcdefghijk',\n  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'"
+        },
+        {
+          "value": "R_1234567890abcdef1234567890abcdef",
+          "type": "Rollbar Access Token (MEDIUM)",
+          "pattern": "R_[0-9a-f]{32}",
+          "line": 182,
+          "context": "  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'\n};"
+        },
+        {
+          "value": "1234567890abcdef1234567890abcdef",
+          "type": "MD5 Hash/Token (MEDIUM)",
+          "pattern": "[0-9a-f]{32}",
+          "line": 181,
+          "context": "  'stripe_pk': 'pk_test_51234567890abcdefghijk',\n  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'"
+        },
+        {
+          "value": "1234567890abcdef1234567890abcdef",
+          "type": "MD5 Hash/Token (MEDIUM)",
+          "pattern": "[0-9a-f]{32}",
+          "line": 182,
+          "context": "  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'\n};"
+        },
+        {
+          "value": "mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true",
+          "type": "MongoDB Connection String (CRITICAL)",
+          "pattern": "mongodb://[^\"\\']*",
+          "line": 11,
+          "context": "\n// Database Connection String (CRITICAL!)\nconst mongoConnection = 'mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true';\n\n// GitHub Token"
+        }
+      ],
+      "suspicious_functions": [
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 18,
+          "context": "// Dangerous Functions - Code Injection Vulnerabilities\nfunction executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 19,
+          "context": "function executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);\n\n  // CRITICAL: Function constructor with user input",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "eval\\s*\\(",
+          "match": "eval(",
+          "line": 137,
+          "context": "  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {\n    eval(event.data.code); // Code injection via postMessage\n  }\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "Function(",
+          "line": 22,
+          "context": "\n  // CRITICAL: Function constructor with user input\n  new Function(userInput)();\n\n  // HIGH: setTimeout with string - Code Injection",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "function (",
+          "line": 134,
+          "context": "\n// PostMessage Security Issues\nwindow.addEventListener('message', function (event) {\n  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "Function\\s*\\(",
+          "match": "function (",
+          "line": 148,
+          "context": "// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "document\\.write\\s*\\(",
+          "match": "document.write(",
+          "line": 34,
+          "context": "\n  // HIGH: Direct DOM manipulation with user data\n  document.write(userData);\n\n  // MEDIUM: Location manipulation",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 31,
+          "context": "function displayUserData(userData) {\n  // CRITICAL: innerHTML without sanitization - DOM XSS\n  document.getElementById('content').innerHTML = userData;\n\n  // HIGH: Direct DOM manipulation with user data",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 52,
+          "context": "\n  // CRITICAL: DOM XSS from URL parameters\n  document.body.innerHTML = '<h1>' + message + '</h1>';\n}\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "innerHTML\\s*=",
+          "match": "innerHTML =",
+          "line": 142,
+          "context": "  if (event.data.action === 'updateDOM') {\n    // DOM XSS via postMessage\n    document.body.innerHTML = event.data.html;\n  }\n});",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 37,
+          "context": "\n  // MEDIUM: Location manipulation\n  location.href = userData;\n}\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 48,
+          "context": "  // CRITICAL: Open Redirect vulnerability\n  if (redirectUrl) {\n    location.href = redirectUrl; // No validation!\n  }\n",
+          "category": "Suspicious Functions"
+        },
+        {
+          "pattern": "location\\.href\\s*=",
+          "match": "location.href =",
+          "line": 116,
+          "context": "    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');\n    location.href = '/admin-panel';\n  }\n}",
+          "category": "Suspicious Functions"
+        }
+      ],
+      "sensitive_data": [
+        {
+          "pattern": "password[\"\\'\\s]*[:=]",
+          "match": "password =",
+          "line": 107,
+          "context": "function processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n\n  // MEDIUM: Password in URL (GET request)",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "password[\"\\'\\s]*[:=]",
+          "match": "password=",
+          "line": 110,
+          "context": "\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n\n  // Client-side only validation",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "password[\"\\'\\s]*[:=]",
+          "match": "password =",
+          "line": 113,
+          "context": "\n  // Client-side only validation\n  if (username === 'admin' && password === 'admin123') {\n    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "username[\"\\'\\s]*[:=]",
+          "match": "username =",
+          "line": 106,
+          "context": "// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "username[\"\\'\\s]*[:=]",
+          "match": "username=",
+          "line": 110,
+          "context": "\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n\n  // Client-side only validation",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "username[\"\\'\\s]*[:=]",
+          "match": "username =",
+          "line": 113,
+          "context": "\n  // Client-side only validation\n  if (username === 'admin' && password === 'admin123') {\n    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "Token =",
+          "line": 8,
+          "context": "const awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "Token =",
+          "line": 14,
+          "context": "\n// GitHub Token\nconst githubToken = 'ghp_1234567890abcdefghijklmnopqrstuvwxyz';\n\n// Dangerous Functions - Code Injection Vulnerabilities",
+          "category": "Sensitive Data"
+        },
+        {
+          "pattern": "token[\"\\'\\s]*[:=]",
+          "match": "token':",
+          "line": 182,
+          "context": "  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'\n};",
+          "category": "Sensitive Data"
+        }
+      ],
+      "dangerous_patterns": [
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${this.baseUrl}",
+          "line": 65,
+          "context": "  // IDOR Vulnerability - No authorization check\n  getUserData(userId) {\n    return fetch(`${this.baseUrl}/users/${userId}`, {\n      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${userId}",
+          "line": 65,
+          "context": "  // IDOR Vulnerability - No authorization check\n  getUserData(userId) {\n    return fetch(`${this.baseUrl}/users/${userId}`, {\n      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${jwtToken}",
+          "line": 67,
+          "context": "    return fetch(`${this.baseUrl}/users/${userId}`, {\n      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!\n        'X-API-Key': googleApiKey // Exposed API key in client!\n      }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${username}",
+          "line": 110,
+          "context": "\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n\n  // Client-side only validation",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${password}",
+          "line": 110,
+          "context": "\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n\n  // Client-side only validation",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "\\$\\{[^}]*\\}",
+          "match": "${query}",
+          "line": 189,
+          "context": "function searchUsers(query) {\n  // Dangerous: building SQL-like queries on client\n  const sqlQuery = `SELECT * FROM users WHERE name = '${query}'`;\n  // This would be sent to backend without sanitization\n}",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 96,
+          "context": "function handleSensitiveData(userToken, sensitiveInfo) {\n  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 97,
+          "context": "  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 98,
+          "context": "  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);\n\n  // Session storage with sensitive data",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "localStorage\\.setItem",
+          "match": "localStorage.setItem",
+          "line": 115,
+          "context": "  if (username === 'admin' && password === 'admin123') {\n    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');\n    location.href = '/admin-panel';\n  }",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "sessionStorage\\.setItem",
+          "match": "sessionStorage.setItem",
+          "line": 101,
+          "context": "\n  // Session storage with sensitive data\n  sessionStorage.setItem('adminAccess', 'true');\n}\n",
+          "category": "Dangerous Patterns"
+        },
+        {
+          "pattern": "addEventListener\\s*\\(\\s*[\"\\']message[\"\\']",
+          "match": "addEventListener('message'",
+          "line": 134,
+          "context": "\n// PostMessage Security Issues\nwindow.addEventListener('message', function (event) {\n  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {",
+          "category": "Dangerous Patterns"
+        }
+      ],
+      "functions": [
+        {
+          "name": "executeUserCode",
+          "line": 17,
+          "context": "\n// Dangerous Functions - Code Injection Vulnerabilities\nfunction executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);"
+        },
+        {
+          "name": "displayUserData",
+          "line": 29,
+          "context": "\n// DOM-based XSS Vulnerabilities\nfunction displayUserData(userData) {\n  // CRITICAL: innerHTML without sanitization - DOM XSS\n  document.getElementById('content').innerHTML = userData;"
+        },
+        {
+          "name": "processUrlParams",
+          "line": 41,
+          "context": "\n// URL Parameter Processing - Open Redirect & XSS\nfunction processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');"
+        },
+        {
+          "name": "handleSensitiveData",
+          "line": 94,
+          "context": "\n// Local Storage Security Issues\nfunction handleSensitiveData(userToken, sensitiveInfo) {\n  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);"
+        },
+        {
+          "name": "processLoginForm",
+          "line": 105,
+          "context": "\n// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;"
+        },
+        {
+          "name": "transferMoney",
+          "line": 121,
+          "context": "\n// Cross-Site Request Forgery (CSRF) Vulnerability\nfunction transferMoney(amount, toAccount) {\n  // No CSRF protection\n  fetch('/api/transfer', {"
+        },
+        {
+          "name": "mergeObjects",
+          "line": 155,
+          "context": "\n// Prototype Pollution Vulnerability\nfunction mergeObjects(target, source) {\n  for (let key in source) {\n    if (typeof source[key] === 'object') {"
+        },
+        {
+          "name": "searchUsers",
+          "line": 187,
+          "context": "\n// SQL Injection (simulated for client-side)\nfunction searchUsers(query) {\n  // Dangerous: building SQL-like queries on client\n  const sqlQuery = `SELECT * FROM users WHERE name = '${query}'`;"
+        },
+        {
+          "name": "onmessage",
+          "line": 148,
+          "context": "// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);"
+        }
+      ],
+      "variables": [
+        {
+          "name": "stripeSecretKey",
+          "line": 5,
+          "context": "\n// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key"
+        },
+        {
+          "name": "awsAccessKey",
+          "line": 6,
+          "context": "// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';"
+        },
+        {
+          "name": "googleApiKey",
+          "line": 7,
+          "context": "const stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n"
+        },
+        {
+          "name": "jwtToken",
+          "line": 8,
+          "context": "const awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)"
+        },
+        {
+          "name": "mongoConnection",
+          "line": 11,
+          "context": "\n// Database Connection String (CRITICAL!)\nconst mongoConnection = 'mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true';\n\n// GitHub Token"
+        },
+        {
+          "name": "githubToken",
+          "line": 14,
+          "context": "\n// GitHub Token\nconst githubToken = 'ghp_1234567890abcdefghijklmnopqrstuvwxyz';\n\n// Dangerous Functions - Code Injection Vulnerabilities"
+        },
+        {
+          "name": "urlParams",
+          "line": 42,
+          "context": "// URL Parameter Processing - Open Redirect & XSS\nfunction processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');"
+        },
+        {
+          "name": "redirectUrl",
+          "line": 43,
+          "context": "function processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n"
+        },
+        {
+          "name": "message",
+          "line": 44,
+          "context": "  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n\n  // CRITICAL: Open Redirect vulnerability"
+        },
+        {
+          "name": "username",
+          "line": 106,
+          "context": "// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n"
+        },
+        {
+          "name": "password",
+          "line": 107,
+          "context": "function processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n\n  // MEDIUM: Password in URL (GET request)"
+        },
+        {
+          "name": "ws",
+          "line": 147,
+          "context": "\n// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages"
+        },
+        {
+          "name": "data",
+          "line": 150,
+          "context": "ws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);\n  document.getElementById('chat').innerHTML += data.message; // XSS\n};"
+        },
+        {
+          "name": "key",
+          "line": 156,
+          "context": "// Prototype Pollution Vulnerability\nfunction mergeObjects(target, source) {\n  for (let key in source) {\n    if (typeof source[key] === 'object') {\n      target[key] = mergeObjects(target[key] || {}, source[key]);"
+        },
+        {
+          "name": "endpoints",
+          "line": 167,
+          "context": "\n// Additional API endpoints for discovery\nconst endpoints = [\n    '/api/v1/users',\n    '/api/v1/payments/process',"
+        },
+        {
+          "name": "config",
+          "line": 178,
+          "context": "\n// More secrets in different formats\nconst config = {\n  'stripe_pk': 'pk_test_51234567890abcdefghijk',\n  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',"
+        },
+        {
+          "name": "sqlQuery",
+          "line": 189,
+          "context": "function searchUsers(query) {\n  // Dangerous: building SQL-like queries on client\n  const sqlQuery = `SELECT * FROM users WHERE name = '${query}'`;\n  // This would be sent to backend without sanitization\n}"
+        }
+      ],
+      "imports": [],
+      "exports": []
+    },
+    "data_flow_analysis": {
+      "file_path": "test_samples/advanced_sample.js",
+      "data_flows": [],
+      "dangerous_flows": [
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "document\\.write",
+          "source_line": 37,
+          "sink_line": 34,
+          "risk_level": "HIGH",
+          "context": "Source: location.href = userData;\nSink: document.write(userData);"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 48,
+          "sink_line": 52,
+          "risk_level": "HIGH",
+          "context": "Source: location.href = redirectUrl; // No validation!\nSink: document.body.innerHTML = '<h1>' + message + '</h1>';"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 137,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "postMessage",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 137,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 140,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.action === 'updateDOM') {\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "postMessage",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 141,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: // DOM XSS via postMessage\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 142,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: document.body.innerHTML = event.data.html;\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "postMessage",
+          "sink_pattern": "eval\\(",
+          "source_line": 133,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: // PostMessage Security Issues\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "eval\\(",
+          "source_line": 136,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.action === 'executeCode') {\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "eval\\(",
+          "source_line": 137,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "postMessage",
+          "sink_pattern": "eval\\(",
+          "source_line": 137,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "eval\\(",
+          "source_line": 140,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.action === 'updateDOM') {\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "postMessage",
+          "sink_pattern": "eval\\(",
+          "source_line": 141,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: // DOM XSS via postMessage\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "code_execution",
+          "source_pattern": "event\\.data",
+          "sink_pattern": "eval\\(",
+          "source_line": 142,
+          "sink_line": 137,
+          "risk_level": "HIGH",
+          "context": "Source: document.body.innerHTML = event.data.html;\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 37,
+          "sink_line": 37,
+          "risk_level": "HIGH",
+          "context": "Source: location.href = userData;\nSink: location.href = userData;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "window\\.location",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 42,
+          "sink_line": 37,
+          "risk_level": "HIGH",
+          "context": "Source: const urlParams = new URLSearchParams(window.location.search);\nSink: location.href = userData;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.search",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 42,
+          "sink_line": 37,
+          "risk_level": "HIGH",
+          "context": "Source: const urlParams = new URLSearchParams(window.location.search);\nSink: location.href = userData;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "URLSearchParams",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 42,
+          "sink_line": 37,
+          "risk_level": "HIGH",
+          "context": "Source: const urlParams = new URLSearchParams(window.location.search);\nSink: location.href = userData;"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 48,
+          "sink_line": 48,
+          "risk_level": "HIGH",
+          "context": "Source: location.href = redirectUrl; // No validation!\nSink: location.href = redirectUrl; // No validation!"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "navigation",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "location\\.href\\s*=",
+          "source_line": 116,
+          "sink_line": 116,
+          "risk_level": "HIGH",
+          "context": "Source: location.href = '/admin-panel';\nSink: location.href = '/admin-panel';"
+        },
+        {
+          "source_type": "user_input",
+          "sink_type": "storage",
+          "source_pattern": "location\\.href",
+          "sink_pattern": "localStorage\\.setItem",
+          "source_line": 116,
+          "sink_line": 115,
+          "risk_level": "MEDIUM",
+          "context": "Source: location.href = '/admin-panel';\nSink: localStorage.setItem('isAdmin', 'true');"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "data\\.",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 137,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "data\\.",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 140,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: if (event.data.action === 'updateDOM') {\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "dom_manipulation",
+          "source_pattern": "data\\.",
+          "sink_pattern": "innerHTML\\s*=",
+          "source_line": 142,
+          "sink_line": 142,
+          "risk_level": "HIGH",
+          "context": "Source: document.body.innerHTML = event.data.html;\nSink: document.body.innerHTML = event.data.html;"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "code_execution",
+          "source_pattern": "data\\.",
+          "sink_pattern": "eval\\(",
+          "source_line": 136,
+          "sink_line": 137,
+          "risk_level": "LOW",
+          "context": "Source: if (event.data.action === 'executeCode') {\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "code_execution",
+          "source_pattern": "data\\.",
+          "sink_pattern": "eval\\(",
+          "source_line": 137,
+          "sink_line": 137,
+          "risk_level": "LOW",
+          "context": "Source: eval(event.data.code); // Code injection via postMessage\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "code_execution",
+          "source_pattern": "data\\.",
+          "sink_pattern": "eval\\(",
+          "source_line": 140,
+          "sink_line": 137,
+          "risk_level": "LOW",
+          "context": "Source: if (event.data.action === 'updateDOM') {\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "code_execution",
+          "source_pattern": "data\\.",
+          "sink_pattern": "eval\\(",
+          "source_line": 142,
+          "sink_line": 137,
+          "risk_level": "LOW",
+          "context": "Source: document.body.innerHTML = event.data.html;\nSink: eval(event.data.code); // Code injection via postMessage"
+        },
+        {
+          "source_type": "api_data",
+          "sink_type": "storage",
+          "source_pattern": "fetch\\(",
+          "sink_pattern": "localStorage\\.setItem",
+          "source_line": 110,
+          "sink_line": 115,
+          "risk_level": "MEDIUM",
+          "context": "Source: fetch(`/login?username=${username}&password=${password}`);\nSink: localStorage.setItem('isAdmin', 'true');"
+        },
+        {
+          "source_type": "form_data",
+          "sink_type": "storage",
+          "source_pattern": "document\\.getElementById.*\\.value",
+          "sink_pattern": "sessionStorage\\.setItem",
+          "source_line": 106,
+          "sink_line": 101,
+          "risk_level": "LOW",
+          "context": "Source: const username = document.getElementById('username').value;\nSink: sessionStorage.setItem('adminAccess', 'true');"
+        }
+      ],
+      "function_calls": [
+        {
+          "function": "Secrets",
+          "line": 4,
+          "context": "// Contains multiple security vulnerabilities for comprehensive testing\n\n// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!",
+          "position": 133
+        },
+        {
+          "function": "String",
+          "line": 10,
+          "context": "const jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)\nconst mongoConnection = 'mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true';\n",
+          "position": 604
+        },
+        {
+          "function": "executeUserCode",
+          "line": 17,
+          "context": "\n// Dangerous Functions - Code Injection Vulnerabilities\nfunction executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);",
+          "position": 869
+        },
+        {
+          "function": "eval",
+          "line": 18,
+          "context": "// Dangerous Functions - Code Injection Vulnerabilities\nfunction executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);\n",
+          "position": 913
+        },
+        {
+          "function": "eval",
+          "line": 19,
+          "context": "function executeUserCode(userInput) {\n  // CRITICAL: eval() with user input - Code Injection\n  eval(userInput);\n\n  // CRITICAL: Function constructor with user input",
+          "position": 955
+        },
+        {
+          "function": "Function",
+          "line": 22,
+          "context": "\n  // CRITICAL: Function constructor with user input\n  new Function(userInput)();\n\n  // HIGH: setTimeout with string - Code Injection",
+          "position": 1031
+        },
+        {
+          "function": "setTimeout",
+          "line": 25,
+          "context": "\n  // HIGH: setTimeout with string - Code Injection\n  setTimeout(userInput, 1000);\n}\n",
+          "position": 1108
+        },
+        {
+          "function": "displayUserData",
+          "line": 29,
+          "context": "\n// DOM-based XSS Vulnerabilities\nfunction displayUserData(userData) {\n  // CRITICAL: innerHTML without sanitization - DOM XSS\n  document.getElementById('content').innerHTML = userData;",
+          "position": 1182
+        },
+        {
+          "function": "getElementById",
+          "line": 31,
+          "context": "function displayUserData(userData) {\n  // CRITICAL: innerHTML without sanitization - DOM XSS\n  document.getElementById('content').innerHTML = userData;\n\n  // HIGH: Direct DOM manipulation with user data",
+          "position": 1277
+        },
+        {
+          "function": "write",
+          "line": 34,
+          "context": "\n  // HIGH: Direct DOM manipulation with user data\n  document.write(userData);\n\n  // MEDIUM: Location manipulation",
+          "position": 1387
+        },
+        {
+          "function": "processUrlParams",
+          "line": 41,
+          "context": "\n// URL Parameter Processing - Open Redirect & XSS\nfunction processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');",
+          "position": 1530
+        },
+        {
+          "function": "URLSearchParams",
+          "line": 42,
+          "context": "// URL Parameter Processing - Open Redirect & XSS\nfunction processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');",
+          "position": 1575
+        },
+        {
+          "function": "get",
+          "line": 43,
+          "context": "function processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n",
+          "position": 1648
+        },
+        {
+          "function": "get",
+          "line": 44,
+          "context": "  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n\n  // CRITICAL: Open Redirect vulnerability",
+          "position": 1693
+        },
+        {
+          "function": "if",
+          "line": 47,
+          "context": "\n  // CRITICAL: Open Redirect vulnerability\n  if (redirectUrl) {\n    location.href = redirectUrl; // No validation!\n  }",
+          "position": 1755
+        },
+        {
+          "function": "constructor",
+          "line": 57,
+          "context": "// API Endpoints with Security Issues\nclass APIClient {\n  constructor() {\n    this.baseUrl = 'https://api.vulnerable-app.com';\n    this.adminEndpoint = '/admin/users'; // Privileged endpoint",
+          "position": 1990
+        },
+        {
+          "function": "getUserData",
+          "line": 64,
+          "context": "\n  // IDOR Vulnerability - No authorization check\n  getUserData(userId) {\n    return fetch(`${this.baseUrl}/users/${userId}`, {\n      headers: {",
+          "position": 2246
+        },
+        {
+          "function": "fetch",
+          "line": 65,
+          "context": "  // IDOR Vulnerability - No authorization check\n  getUserData(userId) {\n    return fetch(`${this.baseUrl}/users/${userId}`, {\n      headers: {\n        'Authorization': `Bearer ${jwtToken}`, // Hardcoded token!",
+          "position": 2279
+        },
+        {
+          "function": "fetchExternalData",
+          "line": 74,
+          "context": "\n  // SSRF Vulnerability\n  fetchExternalData(externalUrl) {\n    // No URL validation - SSRF risk\n    return fetch(externalUrl);",
+          "position": 2517
+        },
+        {
+          "function": "fetch",
+          "line": 76,
+          "context": "  fetchExternalData(externalUrl) {\n    // No URL validation - SSRF risk\n    return fetch(externalUrl);\n  }\n",
+          "position": 2598
+        },
+        {
+          "function": "sendSensitiveData",
+          "line": 80,
+          "context": "\n  // Insecure data transmission\n  sendSensitiveData(data) {\n    // HTTP instead of HTTPS for sensitive data\n    return fetch('http://insecure-endpoint.com/data', {",
+          "position": 2657
+        },
+        {
+          "function": "fetch",
+          "line": 82,
+          "context": "  sendSensitiveData(data) {\n    // HTTP instead of HTTPS for sensitive data\n    return fetch('http://insecure-endpoint.com/data', {\n      method: 'POST',\n      body: JSON.stringify(data),",
+          "position": 2742
+        },
+        {
+          "function": "stringify",
+          "line": 84,
+          "context": "    return fetch('http://insecure-endpoint.com/data', {\n      method: 'POST',\n      body: JSON.stringify(data),\n      headers: {\n        'Content-Type': 'application/json',",
+          "position": 2826
+        },
+        {
+          "function": "handleSensitiveData",
+          "line": 94,
+          "context": "\n// Local Storage Security Issues\nfunction handleSensitiveData(userToken, sensitiveInfo) {\n  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);",
+          "position": 3031
+        },
+        {
+          "function": "setItem",
+          "line": 96,
+          "context": "function handleSensitiveData(userToken, sensitiveInfo) {\n  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);",
+          "position": 3144
+        },
+        {
+          "function": "setItem",
+          "line": 97,
+          "context": "  // HIGH: Storing sensitive data in localStorage\n  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);\n",
+          "position": 3192
+        },
+        {
+          "function": "setItem",
+          "line": 98,
+          "context": "  localStorage.setItem('userToken', userToken);\n  localStorage.setItem('creditCard', sensitiveInfo.creditCard);\n  localStorage.setItem('ssn', sensitiveInfo.ssn);\n\n  // Session storage with sensitive data",
+          "position": 3256
+        },
+        {
+          "function": "setItem",
+          "line": 101,
+          "context": "\n  // Session storage with sensitive data\n  sessionStorage.setItem('adminAccess', 'true');\n}\n",
+          "position": 3350
+        },
+        {
+          "function": "processLoginForm",
+          "line": 105,
+          "context": "\n// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;",
+          "position": 3436
+        },
+        {
+          "function": "getElementById",
+          "line": 106,
+          "context": "// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n",
+          "position": 3485
+        },
+        {
+          "function": "getElementById",
+          "line": 107,
+          "context": "function processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n\n  // MEDIUM: Password in URL (GET request)",
+          "position": 3547
+        },
+        {
+          "function": "URL",
+          "line": 109,
+          "context": "  const password = document.getElementById('password').value;\n\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n",
+          "position": 3607
+        },
+        {
+          "function": "fetch",
+          "line": 110,
+          "context": "\n  // MEDIUM: Password in URL (GET request)\n  fetch(`/login?username=${username}&password=${password}`);\n\n  // Client-side only validation",
+          "position": 3627
+        },
+        {
+          "function": "if",
+          "line": 113,
+          "context": "\n  // Client-side only validation\n  if (username === 'admin' && password === 'admin123') {\n    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');",
+          "position": 3722
+        },
+        {
+          "function": "setItem",
+          "line": 115,
+          "context": "  if (username === 'admin' && password === 'admin123') {\n    // CRITICAL: Client-side authentication\n    localStorage.setItem('isAdmin', 'true');\n    location.href = '/admin-panel';\n  }",
+          "position": 3838
+        },
+        {
+          "function": "Forgery",
+          "line": 120,
+          "context": "}\n\n// Cross-Site Request Forgery (CSRF) Vulnerability\nfunction transferMoney(amount, toAccount) {\n  // No CSRF protection",
+          "position": 3931
+        },
+        {
+          "function": "transferMoney",
+          "line": 121,
+          "context": "\n// Cross-Site Request Forgery (CSRF) Vulnerability\nfunction transferMoney(amount, toAccount) {\n  // No CSRF protection\n  fetch('/api/transfer', {",
+          "position": 3969
+        },
+        {
+          "function": "fetch",
+          "line": 123,
+          "context": "function transferMoney(amount, toAccount) {\n  // No CSRF protection\n  fetch('/api/transfer', {\n    method: 'POST',\n    credentials: 'include', // Includes cookies",
+          "position": 4030
+        },
+        {
+          "function": "stringify",
+          "line": 126,
+          "context": "    method: 'POST',\n    credentials: 'include', // Includes cookies\n    body: JSON.stringify({\n      amount: amount,\n      to: toAccount",
+          "position": 4138
+        },
+        {
+          "function": "addEventListener",
+          "line": 134,
+          "context": "\n// PostMessage Security Issues\nwindow.addEventListener('message', function (event) {\n  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {",
+          "position": 4246
+        },
+        {
+          "function": "function",
+          "line": 134,
+          "context": "\n// PostMessage Security Issues\nwindow.addEventListener('message', function (event) {\n  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {",
+          "position": 4274
+        },
+        {
+          "function": "if",
+          "line": 136,
+          "context": "window.addEventListener('message', function (event) {\n  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {\n    eval(event.data.code); // Code injection via postMessage\n  }",
+          "position": 4331
+        },
+        {
+          "function": "eval",
+          "line": 137,
+          "context": "  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {\n    eval(event.data.code); // Code injection via postMessage\n  }\n",
+          "position": 4378
+        },
+        {
+          "function": "if",
+          "line": 140,
+          "context": "  }\n\n  if (event.data.action === 'updateDOM') {\n    // DOM XSS via postMessage\n    document.body.innerHTML = event.data.html;",
+          "position": 4442
+        },
+        {
+          "function": "WebSocket",
+          "line": 147,
+          "context": "\n// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages",
+          "position": 4614
+        },
+        {
+          "function": "function",
+          "line": 148,
+          "context": "// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);",
+          "position": 4696
+        },
+        {
+          "function": "parse",
+          "line": 150,
+          "context": "ws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);\n  document.getElementById('chat').innerHTML += data.message; // XSS\n};",
+          "position": 4776
+        },
+        {
+          "function": "getElementById",
+          "line": 151,
+          "context": "  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);\n  document.getElementById('chat').innerHTML += data.message; // XSS\n};\n",
+          "position": 4806
+        },
+        {
+          "function": "mergeObjects",
+          "line": 155,
+          "context": "\n// Prototype Pollution Vulnerability\nfunction mergeObjects(target, source) {\n  for (let key in source) {\n    if (typeof source[key] === 'object') {",
+          "position": 4913
+        },
+        {
+          "function": "for",
+          "line": 156,
+          "context": "// Prototype Pollution Vulnerability\nfunction mergeObjects(target, source) {\n  for (let key in source) {\n    if (typeof source[key] === 'object') {\n      target[key] = mergeObjects(target[key] || {}, source[key]);",
+          "position": 4946
+        },
+        {
+          "function": "if",
+          "line": 157,
+          "context": "function mergeObjects(target, source) {\n  for (let key in source) {\n    if (typeof source[key] === 'object') {\n      target[key] = mergeObjects(target[key] || {}, source[key]);\n    } else {",
+          "position": 4976
+        },
+        {
+          "function": "mergeObjects",
+          "line": 158,
+          "context": "  for (let key in source) {\n    if (typeof source[key] === 'object') {\n      target[key] = mergeObjects(target[key] || {}, source[key]);\n    } else {\n      target[key] = source[key]; // Prototype pollution risk",
+          "position": 5035
+        },
+        {
+          "function": "Injection",
+          "line": 186,
+          "context": "};\n\n// SQL Injection (simulated for client-side)\nfunction searchUsers(query) {\n  // Dangerous: building SQL-like queries on client",
+          "position": 5826
+        },
+        {
+          "function": "searchUsers",
+          "line": 187,
+          "context": "\n// SQL Injection (simulated for client-side)\nfunction searchUsers(query) {\n  // Dangerous: building SQL-like queries on client\n  const sqlQuery = `SELECT * FROM users WHERE name = '${query}'`;",
+          "position": 5873
+        }
+      ],
+      "variable_flows": [
+        {
+          "variable": "stripeSecretKey",
+          "assignment": "'sk_live_51234567890abcdefghijk'",
+          "line": 5,
+          "dangerous_usage": [],
+          "context": "\n// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key"
+        },
+        {
+          "variable": "awsAccessKey",
+          "assignment": "'AKIA1234567890ABCDEF'",
+          "line": 6,
+          "dangerous_usage": [],
+          "context": "// API Keys and Secrets (CRITICAL RISKS)\nconst stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';"
+        },
+        {
+          "variable": "googleApiKey",
+          "assignment": "'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'",
+          "line": 7,
+          "dangerous_usage": [],
+          "context": "const stripeSecretKey = 'sk_live_51234567890abcdefghijk'; // Stripe Live Key - CRITICAL!\nconst awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n"
+        },
+        {
+          "variable": "jwtToken",
+          "assignment": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'",
+          "line": 8,
+          "dangerous_usage": [],
+          "context": "const awsAccessKey = 'AKIA1234567890ABCDEF'; // AWS Access Key - CRITICAL!\nconst googleApiKey = 'AIzaSyDdI0hCZtE6vySjMqM3z9Q8O7X6Y5U4WvN'; // Google API Key\nconst jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';\n\n// Database Connection String (CRITICAL!)"
+        },
+        {
+          "variable": "mongoConnection",
+          "assignment": "'mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true'",
+          "line": 11,
+          "dangerous_usage": [],
+          "context": "\n// Database Connection String (CRITICAL!)\nconst mongoConnection = 'mongodb://admin:password123@cluster0.mongodb.net/myapp?retryWrites=true';\n\n// GitHub Token"
+        },
+        {
+          "variable": "githubToken",
+          "assignment": "'ghp_1234567890abcdefghijklmnopqrstuvwxyz'",
+          "line": 14,
+          "dangerous_usage": [],
+          "context": "\n// GitHub Token\nconst githubToken = 'ghp_1234567890abcdefghijklmnopqrstuvwxyz';\n\n// Dangerous Functions - Code Injection Vulnerabilities"
+        },
+        {
+          "variable": "urlParams",
+          "assignment": "new URLSearchParams(window.location.search)",
+          "line": 42,
+          "dangerous_usage": [],
+          "context": "// URL Parameter Processing - Open Redirect & XSS\nfunction processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');"
+        },
+        {
+          "variable": "redirectUrl",
+          "assignment": "urlParams.get('redirect')",
+          "line": 43,
+          "dangerous_usage": [
+            {
+              "sink_type": "navigation",
+              "pattern": "location\\.href\\s*=",
+              "line": 48,
+              "context": "  // CRITICAL: Open Redirect vulnerability\n  if (redirectUrl) {\n    location.href = redirectUrl; // No validation!\n  }\n"
+            }
+          ],
+          "context": "function processUrlParams() {\n  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n"
+        },
+        {
+          "variable": "message",
+          "assignment": "urlParams.get('message')",
+          "line": 44,
+          "dangerous_usage": [
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "innerHTML\\s*=",
+              "line": 52,
+              "context": "\n  // CRITICAL: DOM XSS from URL parameters\n  document.body.innerHTML = '<h1>' + message + '</h1>';\n}\n"
+            },
+            {
+              "sink_type": "code_execution",
+              "pattern": "eval\\(",
+              "line": 137,
+              "context": "  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {\n    eval(event.data.code); // Code injection via postMessage\n  }\n"
+            }
+          ],
+          "context": "  const urlParams = new URLSearchParams(window.location.search);\n  const redirectUrl = urlParams.get('redirect');\n  const message = urlParams.get('message');\n\n  // CRITICAL: Open Redirect vulnerability"
+        },
+        {
+          "variable": "username",
+          "assignment": "document.getElementById('username').value",
+          "line": 106,
+          "dangerous_usage": [],
+          "context": "// Form Processing with Validation Issues\nfunction processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n"
+        },
+        {
+          "variable": "password",
+          "assignment": "document.getElementById('password').value",
+          "line": 107,
+          "dangerous_usage": [],
+          "context": "function processLoginForm() {\n  const username = document.getElementById('username').value;\n  const password = document.getElementById('password').value;\n\n  // MEDIUM: Password in URL (GET request)"
+        },
+        {
+          "variable": "ws",
+          "assignment": "new WebSocket('ws://insecure-websocket.com')",
+          "line": 147,
+          "dangerous_usage": [],
+          "context": "\n// WebSocket Security Issues\nconst ws = new WebSocket('ws://insecure-websocket.com'); // HTTP instead of HTTPS\nws.onmessage = function (event) {\n  // No validation of WebSocket messages"
+        },
+        {
+          "variable": "data",
+          "assignment": "JSON.parse(event.data)",
+          "line": 150,
+          "dangerous_usage": [
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "innerHTML\\s*=",
+              "line": 31,
+              "context": "function displayUserData(userData) {\n  // CRITICAL: innerHTML without sanitization - DOM XSS\n  document.getElementById('content').innerHTML = userData;\n\n  // HIGH: Direct DOM manipulation with user data"
+            },
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "innerHTML\\s*=",
+              "line": 142,
+              "context": "  if (event.data.action === 'updateDOM') {\n    // DOM XSS via postMessage\n    document.body.innerHTML = event.data.html;\n  }\n});"
+            },
+            {
+              "sink_type": "dom_manipulation",
+              "pattern": "document\\.write",
+              "line": 34,
+              "context": "\n  // HIGH: Direct DOM manipulation with user data\n  document.write(userData);\n\n  // MEDIUM: Location manipulation"
+            },
+            {
+              "sink_type": "code_execution",
+              "pattern": "eval\\(",
+              "line": 137,
+              "context": "  // CRITICAL: No origin validation\n  if (event.data.action === 'executeCode') {\n    eval(event.data.code); // Code injection via postMessage\n  }\n"
+            },
+            {
+              "sink_type": "navigation",
+              "pattern": "location\\.href\\s*=",
+              "line": 37,
+              "context": "\n  // MEDIUM: Location manipulation\n  location.href = userData;\n}\n"
+            }
+          ],
+          "context": "ws.onmessage = function (event) {\n  // No validation of WebSocket messages\n  const data = JSON.parse(event.data);\n  document.getElementById('chat').innerHTML += data.message; // XSS\n};"
+        },
+        {
+          "variable": "endpoints",
+          "assignment": "[\n    '/api/v1/users',\n    '/api/v1/payments/process',\n    '/admin/dashboard',\n    '/api/internal/config',\n    'https://external-api.com/data',\n    '/webhook/stripe',\n    '/oauth/callback'\n]",
+          "line": 167,
+          "dangerous_usage": [],
+          "context": "\n// Additional API endpoints for discovery\nconst endpoints = [\n    '/api/v1/users',\n    '/api/v1/payments/process',"
+        },
+        {
+          "variable": "config",
+          "assignment": "{\n  'stripe_pk': 'pk_test_51234567890abcdefghijk',\n  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',\n  'mailgun_key': 'key-1234567890abcdef1234567890abcdef',\n  'rollbar_token': 'R_1234567890abcdef1234567890abcdef',\n  'slack_webhook': 'xoxb-123456789012-123456789012-1234567890abcdefghijklmn'\n}",
+          "line": 178,
+          "dangerous_usage": [],
+          "context": "\n// More secrets in different formats\nconst config = {\n  'stripe_pk': 'pk_test_51234567890abcdefghijk',\n  'sendgrid_key': 'SG.1234567890abcdefghijk.1234567890abcdefghijklmnopqrstuvwxyz',"
+        },
+        {
+          "variable": "sqlQuery",
+          "assignment": "`SELECT * FROM users WHERE name = '${query}'`",
+          "line": 189,
+          "dangerous_usage": [],
+          "context": "function searchUsers(query) {\n  // Dangerous: building SQL-like queries on client\n  const sqlQuery = `SELECT * FROM users WHERE name = '${query}'`;\n  // This would be sent to backend without sanitization\n}"
+        }
+      ],
+      "security_implications": [
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 37,
+          "sink_line": 34,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 48,
+          "sink_line": 52,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 137,
+          "sink_line": 142,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 137,
+          "sink_line": 142,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 140,
+          "sink_line": 142,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 141,
+          "sink_line": 142,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "DOM-based XSS",
+          "risk_level": "HIGH",
+          "description": "User input is directly inserted into DOM without sanitization, potentially allowing XSS attacks.",
+          "attack_vector": "Inject malicious HTML/JavaScript through URL parameters, hash, or user input fields.",
+          "source_line": 142,
+          "sink_line": 142,
+          "remediation": "Use textContent instead of innerHTML, or implement proper HTML sanitization."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 133,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 136,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 137,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 137,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 140,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 141,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Code Injection",
+          "risk_level": "HIGH",
+          "description": "User input is used in code execution contexts (eval, Function), allowing arbitrary code execution.",
+          "attack_vector": "Craft payload that executes arbitrary JavaScript when processed by eval() or similar functions.",
+          "source_line": 142,
+          "sink_line": 137,
+          "remediation": "Avoid eval() and dynamic code execution. Use JSON.parse() for data parsing."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 37,
+          "sink_line": 37,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 42,
+          "sink_line": 37,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 42,
+          "sink_line": 37,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 42,
+          "sink_line": 37,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 48,
+          "sink_line": 48,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Open Redirect",
+          "risk_level": "HIGH",
+          "description": "User input controls navigation/redirects without validation, enabling open redirect attacks.",
+          "attack_vector": "Manipulate URL parameters to redirect users to malicious sites.",
+          "source_line": 116,
+          "sink_line": 116,
+          "remediation": "Validate and whitelist allowed redirect URLs."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 116,
+          "sink_line": 115,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "HIGH",
+          "description": "API response data is inserted into DOM without proper validation.",
+          "attack_vector": "Compromise API to return malicious content that gets rendered in the browser.",
+          "source_line": 137,
+          "sink_line": 142,
+          "remediation": "Validate and sanitize all API responses before DOM insertion."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "HIGH",
+          "description": "API response data is inserted into DOM without proper validation.",
+          "attack_vector": "Compromise API to return malicious content that gets rendered in the browser.",
+          "source_line": 140,
+          "sink_line": 142,
+          "remediation": "Validate and sanitize all API responses before DOM insertion."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "HIGH",
+          "description": "API response data is inserted into DOM without proper validation.",
+          "attack_vector": "Compromise API to return malicious content that gets rendered in the browser.",
+          "source_line": 142,
+          "sink_line": 142,
+          "remediation": "Validate and sanitize all API responses before DOM insertion."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "LOW",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 136,
+          "sink_line": 137,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "LOW",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 137,
+          "sink_line": 137,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "LOW",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 140,
+          "sink_line": 137,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Potential Security Issue",
+          "risk_level": "LOW",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 142,
+          "sink_line": 137,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "MEDIUM",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 110,
+          "sink_line": 115,
+          "remediation": "Implement input validation and output encoding."
+        },
+        {
+          "vulnerability_type": "Data Exposure",
+          "risk_level": "LOW",
+          "description": "Potential security vulnerability detected in data flow.",
+          "attack_vector": "Exploit the data flow to inject malicious content or behavior.",
+          "source_line": 106,
+          "sink_line": 101,
+          "remediation": "Implement input validation and output encoding."
+        }
+      ]
+    },
+    "ai_analysis": {
+      "enabled": true,
+      "error": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "vulnerabilities": [],
+      "attack_vectors": [],
+      "security_score": 0,
+      "recommendations": []
+    },
+    "timestamp": "2025-07-30T10:33:46.379910"
+  }
+]

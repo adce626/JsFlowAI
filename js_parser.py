@@ -24,23 +24,58 @@ class JSParser:
             ],
             
             'secrets': [
+                # API Keys and Tokens
                 r'["\'][A-Za-z0-9]{20,}["\']',  # Generic long strings
                 r'api[_-]?key["\'\s]*[:=]["\'\s]*([A-Za-z0-9_-]+)',  # API keys
                 r'secret[_-]?key["\'\s]*[:=]["\'\s]*([A-Za-z0-9_-]+)',  # Secret keys
                 r'access[_-]?token["\'\s]*[:=]["\'\s]*([A-Za-z0-9._-]+)',  # Access tokens
                 r'bearer["\'\s]+([A-Za-z0-9._-]+)',  # Bearer tokens
+                r'authorization["\'\s]*[:=]["\'\s]*([A-Za-z0-9._-]+)',  # Authorization headers
+                r'x[_-]api[_-]key["\'\s]*[:=]["\'\s]*([A-Za-z0-9._-]+)',  # X-API-Key headers
+                
+                # JWT Tokens
+                r'eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*',  # JWT tokens
+                r'jwt["\'\s]*[:=]["\'\s]*([A-Za-z0-9._-]+)',  # JWT variables
+                r'token["\'\s]*[:=]["\'\s]*([A-Za-z0-9._-]{20,})',  # Generic tokens
+                
+                # Cloud Provider Keys
                 r'sk_[a-zA-Z0-9]{24,}',  # Stripe secret keys
                 r'pk_[a-zA-Z0-9]{24,}',  # Stripe public keys
+                r'rk_[a-zA-Z0-9]{24,}',  # Stripe restricted keys
                 r'AKIA[0-9A-Z]{16}',  # AWS access keys
+                r'ASIA[0-9A-Z]{16}',  # AWS temporary access keys
                 r'ya29\.[0-9A-Za-z_-]+',  # Google OAuth
                 r'AIza[0-9A-Za-z_-]{35}',  # Google API keys
-                r'[0-9a-f]{32}',  # MD5 hashes (potential tokens)
-                r'[0-9a-f]{40}',  # SHA1 hashes (potential tokens)
+                r'1\/\/[0-9A-Za-z_-]{43}',  # Google service account
+                r'sq0[a-z]{3}-[0-9A-Za-z_-]{22,43}',  # Square OAuth
+                
+                # GitHub Tokens
                 r'ghp_[A-Za-z0-9_]{36}',  # GitHub personal access tokens
                 r'gho_[A-Za-z0-9_]{36}',  # GitHub OAuth tokens
                 r'ghu_[A-Za-z0-9_]{36}',  # GitHub user-to-server tokens
                 r'ghs_[A-Za-z0-9_]{36}',  # GitHub server-to-server tokens
                 r'ghr_[A-Za-z0-9_]{36}',  # GitHub refresh tokens
+                
+                # Other Common Providers
+                r'sk_test_[0-9a-zA-Z]{24}',  # Stripe test keys
+                r'sk_live_[0-9a-zA-Z]{24}',  # Stripe live keys (CRITICAL!)
+                r'SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}',  # SendGrid
+                r'key-[0-9a-f]{32}',  # Mailgun
+                r'[0-9a-f]{32}-us[0-9]{1,2}',  # Mailchimp
+                r'R_[0-9a-f]{32}',  # Rollbar
+                r'xoxb-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}',  # Slack Bot
+                r'xoxp-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}',  # Slack User
+                
+                # Hashes (potential tokens)
+                r'[0-9a-f]{32}',  # MD5 hashes (potential tokens)
+                r'[0-9a-f]{40}',  # SHA1 hashes (potential tokens)
+                r'[0-9a-f]{64}',  # SHA256 hashes (potential tokens)
+                
+                # Database Connection Strings
+                r'mongodb://[^"\']*',  # MongoDB connection strings
+                r'mysql://[^"\']*',  # MySQL connection strings
+                r'postgres://[^"\']*',  # PostgreSQL connection strings
+                r'redis://[^"\']*',  # Redis connection strings
             ],
             
             'suspicious_functions': [
@@ -310,29 +345,76 @@ class JSParser:
         return True
     
     def _classify_secret(self, secret):
-        """Classify the type of secret based on patterns"""
-        if secret.startswith('sk_'):
-            return 'Stripe Secret Key'
-        elif secret.startswith('pk_'):
-            return 'Stripe Public Key'
-        elif secret.startswith('AKIA'):
-            return 'AWS Access Key'
+        """Classify the type of secret based on patterns with risk assessment"""
+        # Critical Risk Secrets (Production Keys)
+        if secret.startswith('sk_live_'):
+            return 'Stripe Live Secret Key (CRITICAL)'
+        elif secret.startswith('AKIA') and len(secret) == 20:
+            return 'AWS Access Key (CRITICAL)'
+        elif secret.startswith('ASIA') and len(secret) == 20:
+            return 'AWS Temporary Access Key (HIGH)'
         elif secret.startswith('ya29.'):
-            return 'Google OAuth Token'
-        elif secret.startswith('AIza'):
-            return 'Google API Key'
+            return 'Google OAuth Token (HIGH)'
+        elif secret.startswith('xoxb-'):
+            return 'Slack Bot Token (HIGH)'
+        elif secret.startswith('xoxp-'):
+            return 'Slack User Token (HIGH)'
         elif secret.startswith('ghp_'):
-            return 'GitHub Personal Access Token'
+            return 'GitHub Personal Access Token (HIGH)'
         elif secret.startswith('gho_'):
-            return 'GitHub OAuth Token'
+            return 'GitHub OAuth Token (HIGH)'
+        elif secret.startswith('ghs_'):
+            return 'GitHub Server Token (HIGH)'
+        elif secret.startswith('SG.') and len(secret) > 60:
+            return 'SendGrid API Key (HIGH)'
+        
+        # Medium Risk Secrets
+        elif secret.startswith('sk_test_'):
+            return 'Stripe Test Secret Key (MEDIUM)'
+        elif secret.startswith('pk_'):
+            return 'Stripe Public Key (MEDIUM)'
+        elif secret.startswith('rk_'):
+            return 'Stripe Restricted Key (MEDIUM)'
+        elif secret.startswith('AIza'):
+            return 'Google API Key (MEDIUM)'
+        elif secret.startswith('key-') and len(secret) == 36:
+            return 'Mailgun API Key (MEDIUM)'
+        elif secret.startswith('R_') and len(secret) == 34:
+            return 'Rollbar Access Token (MEDIUM)'
+        elif re.match(r'^[0-9a-f]{32}-us[0-9]{1,2}$', secret):
+            return 'Mailchimp API Key (MEDIUM)'
+        elif secret.startswith('sq0'):
+            return 'Square OAuth Token (MEDIUM)'
+        
+        # JWT Tokens
+        elif re.match(r'^eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*$', secret):
+            return 'JWT Token (HIGH)'
+            
+        # Database Connection Strings
+        elif secret.startswith('mongodb://'):
+            return 'MongoDB Connection String (CRITICAL)'
+        elif secret.startswith('mysql://'):
+            return 'MySQL Connection String (CRITICAL)'
+        elif secret.startswith('postgres://'):
+            return 'PostgreSQL Connection String (CRITICAL)'
+        elif secret.startswith('redis://'):
+            return 'Redis Connection String (HIGH)'
+            
+        # Hash patterns
         elif re.match(r'^[0-9a-f]{32}$', secret):
-            return 'MD5 Hash/Token'
+            return 'MD5 Hash/Token (MEDIUM)'
         elif re.match(r'^[0-9a-f]{40}$', secret):
-            return 'SHA1 Hash/Token'
+            return 'SHA1 Hash/Token (MEDIUM)'
+        elif re.match(r'^[0-9a-f]{64}$', secret):
+            return 'SHA256 Hash/Token (MEDIUM)'
+            
+        # Generic patterns
+        elif len(secret) > 30 and any(c.isdigit() for c in secret) and any(c.isalpha() for c in secret):
+            return 'Potential API Key (MEDIUM)'
         elif len(secret) > 20:
-            return 'Potential API Key'
+            return 'Long String Token (LOW)'
         else:
-            return 'Unknown Secret'
+            return 'Unknown Secret (LOW)'
     
     def _get_context(self, content, start, end, context_lines=2):
         """Get surrounding context for a match"""

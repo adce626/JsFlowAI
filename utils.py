@@ -182,6 +182,7 @@ def generate_html_report(results):
         file_path = result['file_path']
         parsing_results = result.get('parsing_results', {})
         ai_analysis = result.get('ai_analysis', {})
+        data_flow_analysis = result.get('data_flow_analysis', {})
         
         # File header
         file_analyses += f"""
@@ -271,6 +272,26 @@ def generate_html_report(results):
             if len(secrets) > 5:
                 file_analyses += f'<tr><td colspan="3" class="text-muted">... and {len(secrets) - 5} more</td></tr>'
             file_analyses += '</tbody></table></div>'
+        
+        # Data Flow Analysis
+        dangerous_flows = data_flow_analysis.get('dangerous_flows', [])
+        if dangerous_flows:
+            file_analyses += f'<h6><i class="fas fa-sitemap"></i> Data Flow Analysis ({len(dangerous_flows)} flows)</h6>'
+            for flow in dangerous_flows[:3]:  # Show first 3 flows
+                risk_color = 'danger' if flow.get('risk_level') == 'HIGH' else 'warning' if flow.get('risk_level') == 'MEDIUM' else 'info'
+                file_analyses += f"""
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h6 class="text-{risk_color}">
+                            <i class="fas fa-flow-chart"></i> {flow.get('source_type', '').title()} → {flow.get('sink_type', '').title()}
+                            <span class="badge bg-{risk_color}">{flow.get('risk_level', 'LOW')}</span>
+                        </h6>
+                        <p><small>Source: Line {flow.get('source_line', 'N/A')} | Sink: Line {flow.get('sink_line', 'N/A')}</small></p>
+                    </div>
+                </div>
+                """
+            if len(dangerous_flows) > 3:
+                file_analyses += f'<p class="text-muted">... and {len(dangerous_flows) - 3} more flows</p>'
         
         file_analyses += '</div></div>'  # Close card-body and card
     

@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from js_parser import JSParser
 from ai_analyzer import AIAnalyzer
+from data_flow_analyzer import DataFlowAnalyzer
 from utils import beautify_js, generate_html_report, setup_logging, log_info, log_error, log_warning
 
 # Initialize colorama for cross-platform colored output
@@ -23,6 +24,7 @@ class JSFlowAI:
     def __init__(self):
         self.parser = JSParser()
         self.ai_analyzer = AIAnalyzer()
+        self.data_flow_analyzer = DataFlowAnalyzer()
         self.results = []
         
     def analyze_file(self, file_path):
@@ -40,6 +42,9 @@ class JSFlowAI:
             # Parse JavaScript for patterns
             parsing_results = self.parser.parse(beautified_js, file_path)
             
+            # Data Flow Analysis
+            data_flow_analysis = self.data_flow_analyzer.analyze_data_flow(beautified_js, str(file_path))
+            
             # AI Analysis
             ai_analysis = self.ai_analyzer.analyze_code(beautified_js, parsing_results)
             
@@ -48,6 +53,7 @@ class JSFlowAI:
                 'file_path': str(file_path),
                 'file_size': os.path.getsize(file_path),
                 'parsing_results': parsing_results,
+                'data_flow_analysis': data_flow_analysis,
                 'ai_analysis': ai_analysis,
                 'timestamp': self.ai_analyzer.get_timestamp()
             }
@@ -62,22 +68,50 @@ class JSFlowAI:
                 'timestamp': self.ai_analyzer.get_timestamp()
             }
     
-    def analyze_directory(self, directory_path):
+    def analyze_directory(self, directory_path, recursive=True):
         """Analyze all JavaScript files in a directory"""
         js_files = []
-        for ext in ['*.js', '*.jsx', '*.ts', '*.tsx']:
-            js_files.extend(Path(directory_path).rglob(ext))
+        search_pattern = '**/' if recursive else ''
+        
+        # Support multiple JavaScript file extensions
+        extensions = ['*.js', '*.jsx', '*.ts', '*.tsx', '*.vue', '*.mjs']
+        
+        directory = Path(directory_path)
+        for ext in extensions:
+            if recursive:
+                js_files.extend(directory.rglob(ext))
+            else:
+                js_files.extend(directory.glob(ext))
+        
+        # Filter out node_modules and other common exclusions
+        excluded_dirs = {'node_modules', '.git', 'dist', 'build', 'coverage', '.next', 'vendor'}
+        js_files = [f for f in js_files if not any(excluded in f.parts for excluded in excluded_dirs)]
         
         if not js_files:
             log_warning(f"No JavaScript files found in {directory_path}")
             return []
         
-        log_info(f"Found {len(js_files)} JavaScript files")
+        log_info(f"Found {len(js_files)} JavaScript files (excluding node_modules, dist, etc.)")
+        
+        # Group files by size for better processing
+        small_files = [f for f in js_files if f.stat().st_size < 100000]  # < 100KB
+        large_files = [f for f in js_files if f.stat().st_size >= 100000]  # >= 100KB
         
         results = []
-        for file_path in tqdm(js_files, desc="Analyzing files"):
-            result = self.analyze_file(file_path)
-            results.append(result)
+        
+        # Analyze small files first (usually faster)
+        if small_files:
+            log_info(f"Processing {len(small_files)} smaller files...")
+            for file_path in tqdm(small_files, desc="Analyzing small files"):
+                result = self.analyze_file(file_path)
+                results.append(result)
+        
+        # Then analyze larger files
+        if large_files:
+            log_info(f"Processing {len(large_files)} larger files...")
+            for file_path in tqdm(large_files, desc="Analyzing large files"):
+                result = self.analyze_file(file_path)
+                results.append(result)
             
         return results
     
@@ -206,6 +240,40 @@ Examples:
         '--no-ai',
         action='store_true',
         help='Skip AI analysis (regex only)'
+    )
+    
+    parser.add_argument(
+        '--recursive', '-r',
+        action='store_true',
+        default=True,
+        help='Recursively analyze subdirectories (default: True)'
+    )
+    
+    parser.add_argument(
+        '--exclude',
+        nargs='*',
+        default=['node_modules', '.git', 'dist', 'build', 'coverage'],
+        help='Directories to exclude from analysis'
+    )
+    
+    parser.add_argument(
+        '--severity-filter',
+        choices=['critical', 'high', 'medium', 'low', 'all'],
+        default='all',
+        help='Filter results by minimum severity level'
+    )
+    
+    parser.add_argument(
+        '--only-secrets',
+        action='store_true',
+        help='Only scan for secrets and API keys'
+    )
+    
+    parser.add_argument(
+        '--risk-threshold',
+        choices=['critical', 'high', 'medium', 'low'],
+        default='low',
+        help='Minimum risk level to report'
     )
     
     args = parser.parse_args()

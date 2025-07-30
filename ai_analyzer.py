@@ -88,50 +88,77 @@ class AIAnalyzer:
     
     def _get_system_prompt(self):
         """Get the system prompt for AI analysis"""
-        return """You are a cybersecurity expert specializing in JavaScript security analysis. 
+        return """You are a penetration testing expert specializing in JavaScript security analysis and vulnerability assessment.
 
-Your task is to analyze JavaScript code for security vulnerabilities and potential attack vectors.
+ANALYSIS APPROACH:
+1. Examine code flow and data handling patterns
+2. Identify specific attack vectors with exploitation techniques
+3. Classify vulnerabilities using OWASP Top 10 framework
+4. Provide actionable exploit suggestions where applicable
 
-Focus on:
-1. Common web vulnerabilities (XSS, CSRF, injection attacks)
-2. Insecure coding practices
-3. Exposed sensitive data
-4. Authentication/authorization issues
-5. Client-side security weaknesses
+VULNERABILITY CATEGORIES TO FOCUS ON:
+- XSS (Reflected, Stored, DOM-based) 
+- IDOR (Insecure Direct Object References)
+- Authentication/Authorization Bypass
+- Injection Attacks (SQL, Command, Code)
+- SSRF (Server-Side Request Forgery)
+- CSRF (Cross-Site Request Forgery)
+- Information Disclosure
+- Client-side Security Issues
+
+SEVERITY CLASSIFICATION:
+- CRITICAL: Remote code execution, authentication bypass, direct data access
+- HIGH: XSS, IDOR, significant data exposure, privilege escalation  
+- MEDIUM: Information disclosure, CSRF, client-side vulnerabilities
+- LOW: Best practice violations, minor security concerns
 
 Respond ONLY with valid JSON in this exact format:
 {
     "vulnerabilities": [
         {
-            "type": "vulnerability_type",
-            "severity": "critical|high|medium|low",
-            "description": "detailed description",
-            "location": "function/line reference",
+            "type": "XSS|IDOR|Auth_Bypass|Injection|SSRF|CSRF|Info_Disclosure|Client_Side",
+            "severity": "critical|high|medium|low", 
+            "description": "Detailed technical description of the vulnerability",
+            "location": "function_name or line_reference",
             "cwe_id": "CWE-XXX",
-            "impact": "potential impact description"
+            "impact": "Specific impact and potential consequences",
+            "owasp_category": "A01|A02|A03|A04|A05|A06|A07|A08|A09|A10",
+            "exploit_complexity": "low|medium|high",
+            "data_at_risk": "user_data|admin_data|system_data|financial_data"
         }
     ],
     "attack_vectors": [
         {
-            "attack_type": "attack category",
-            "method": "how to exploit",
-            "payload": "example payload or technique",
-            "target": "what part of code to target"
+            "attack_type": "Specific attack category",
+            "method": "Step-by-step exploitation method", 
+            "payload": "Concrete payload or exploitation technique",
+            "target": "Specific function, endpoint, or code section",
+            "prerequisites": "What attacker needs to exploit this",
+            "impact_scope": "local|application|system"
         }
     ],
     "security_score": 85,
     "recommendations": [
         {
-            "priority": "high|medium|low",
-            "action": "specific remediation step",
-            "reason": "why this is important"
+            "priority": "critical|high|medium|low",
+            "action": "Specific technical remediation step",
+            "reason": "Why this fix is important for security",
+            "implementation": "How to implement the fix"
         }
     ],
-    "code_quality": {
-        "uses_eval": false,
-        "has_xss_risks": true,
-        "exposes_sensitive_data": false,
-        "has_insecure_communication": false
+    "threat_intelligence": {
+        "uses_dangerous_functions": false,
+        "has_input_validation_issues": true,
+        "exposes_sensitive_endpoints": false,
+        "has_authentication_flaws": false,
+        "client_side_secrets": true,
+        "insecure_data_transmission": false
+    },
+    "risk_assessment": {
+        "overall_risk": "critical|high|medium|low",
+        "business_impact": "Description of business risk",
+        "technical_impact": "Description of technical consequences",
+        "likelihood": "high|medium|low"
     }
 }"""
     

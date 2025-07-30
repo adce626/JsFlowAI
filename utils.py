@@ -68,8 +68,8 @@ def beautify_js(js_content):
 
 def generate_html_report(results):
     """Generate HTML report from analysis results"""
-    html_template = """
-<!DOCTYPE html>
+    # Use double braces to escape CSS curly braces in Python format string
+    html_template = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -78,15 +78,15 @@ def generate_html_report(results):
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .severity-critical { color: #dc3545; }
-        .severity-high { color: #fd7e14; }
-        .severity-medium { color: #ffc107; }
-        .severity-low { color: #28a745; }
-        .card-header { background-color: #f8f9fa; }
-        .code-snippet { background-color: #f8f9fa; font-family: 'Courier New', monospace; }
-        .vulnerability-card { margin-bottom: 1rem; }
-        .attack-vector { background-color: #fff3cd; }
-        .recommendation { background-color: #d1ecf1; }
+        .severity-critical {{ color: #dc3545; }}
+        .severity-high {{ color: #fd7e14; }}
+        .severity-medium {{ color: #ffc107; }}
+        .severity-low {{ color: #28a745; }}
+        .card-header {{ background-color: #f8f9fa; }}
+        .code-snippet {{ background-color: #f8f9fa; font-family: 'Courier New', monospace; }}
+        .vulnerability-card {{ margin-bottom: 1rem; }}
+        .attack-vector {{ background-color: #fff3cd; }}
+        .recommendation {{ background-color: #d1ecf1; }}
     </style>
 </head>
 <body>
@@ -115,8 +115,7 @@ def generate_html_report(results):
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
-    """
+</html>"""
     
     # Generate summary cards
     total_files = len(results)
@@ -261,7 +260,11 @@ def generate_html_report(results):
             file_analyses += '<table class="table table-sm">'
             file_analyses += '<thead><tr><th>Type</th><th>Value (masked)</th><th>Line</th></tr></thead><tbody>'
             for secret in secrets[:5]:  # Show first 5
-                masked_value = secret.get('value', '')[:4] + '*' * (len(secret.get('value', '')) - 4)
+                secret_value = secret.get('value', '')
+                if len(secret_value) > 4:
+                    masked_value = secret_value[:4] + '*' * (len(secret_value) - 4)
+                else:
+                    masked_value = '*' * len(secret_value)
                 file_analyses += f"""
                 <tr>
                     <td><span class="badge bg-warning">{secret.get('type', 'Unknown')}</span></td>
